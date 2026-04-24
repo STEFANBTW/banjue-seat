@@ -1180,13 +1180,39 @@ const UserDashboard = () => {
   ];
 
   const [testimonialType, setTestimonialType] = useState<string | null>(null);
+  const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
+  const [preview, setPreview] = useState<string | null>(null);
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      const file = e.target.files?.[0];
+      if (file) {
+          const reader = new FileReader();
+          reader.onloadend = () => setPreview(reader.result as string);
+          reader.readAsDataURL(file);
+      }
+  };
 
   return (
     <div className="min-h-screen bg-[var(--color-bg-dark)] pt-32 pb-20 px-4 md:px-8 max-w-6xl mx-auto">
+      {isEditProfileOpen && (
+          <div className="fixed inset-0 z-[1000] flex items-center justify-center p-4">
+              <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" onClick={() => setIsEditProfileOpen(false)}></div>
+              <div className="bg-[var(--color-bg-surface)] p-8 rounded-3xl border border-[var(--color-border-light)] w-full max-w-sm relative z-10 shadow-2xl">
+                  <h3 className="text-xl font-serif mb-6 text-[var(--color-text-main)]">Edit Profile</h3>
+                  <div className="space-y-4">
+                      <input className="w-full bg-black/40 border border-[var(--color-border-light)] rounded-xl p-3 text-sm text-[var(--color-text-main)] outline-none" placeholder="Name" defaultValue="Alex Thorne" />
+                      <input className="w-full bg-black/40 border border-[var(--color-border-light)] rounded-xl p-3 text-sm text-[var(--color-text-main)] outline-none" placeholder="Email" defaultValue="alex@example.com" />
+                      <input type="password" className="w-full bg-black/40 border border-[var(--color-border-light)] rounded-xl p-3 text-sm text-[var(--color-text-main)] outline-none" placeholder="New Password" />
+                      <Button className="w-full border-none">Save Changes</Button>
+                  </div>
+              </div>
+          </div>
+      )}
       <div className="flex flex-col md:flex-row gap-12 mb-20">
         <div className="md:w-1/3 text-center md:text-left">
-          <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-[var(--color-primary)] mx-auto md:mx-0 mb-6 shadow-2xl">
+          <div className="w-32 h-32 rounded-full overflow-hidden border-2 border-[var(--color-primary)] mx-auto md:mx-0 mb-6 shadow-2xl relative group cursor-pointer" onClick={() => setIsEditProfileOpen(true)}>
             <img src="https://i.pravatar.cc/150?u=user" alt="User Profile" className="w-full h-full object-cover" />
+            <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-xs font-bold uppercase tracking-widest transition-opacity">Edit</div>
           </div>
           <h2 className="font-serif text-3xl text-[var(--color-text-main)] mb-1">Alex Thorne</h2>
           <p className="font-sans text-xs uppercase tracking-widest text-[var(--color-text-dimmed)]">Epicurean Member</p>
@@ -1216,17 +1242,17 @@ const UserDashboard = () => {
           </div>
 
           <div className="mt-12 bg-[var(--color-bg-surface)] p-8 rounded-[2rem] border border-[var(--color-border-light)]">
-            <h4 className="font-serif text-xl text-[var(--color-accent)] mb-6">Leave a Reflection</h4>
+            <h4 className="font-serif text-xl text-[var(--color-primary)] mb-6">Leave a Reflection</h4>
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
               {[
                 { type: 'text', icon: <Quote className="w-5 h-5" />, label: 'Text' },
-                { type: 'picture', icon: <Image className="w-5 h-5" />, label: 'Image' },
+                { type: 'image', icon: <Image className="w-5 h-5" />, label: 'Image' },
                 { type: 'video', icon: <Video className="w-5 h-5" />, label: 'Video' },
                 { type: 'audio', icon: <Mic2 className="w-5 h-5" />, label: 'Audio' }
               ].map(item => (
                 <button 
                   key={item.type}
-                  onClick={() => setTestimonialType(item.type)}
+                  onClick={() => { setTestimonialType(item.type); setPreview(null); }}
                   className={`flex flex-col items-center gap-2 p-4 rounded-xl border transition-all ${testimonialType === item.type ? 'bg-[var(--color-primary)]/20 border-[var(--color-primary)] text-[var(--color-text-main)]' : 'bg-black/20 border-transparent text-[var(--color-text-dimmed)] hover:border-[var(--color-border-light)]'}`}
                 >
                   {item.icon}
@@ -1236,10 +1262,34 @@ const UserDashboard = () => {
             </div>
             {testimonialType && (
               <div className="animate-in fade-in duration-500">
-                <textarea 
-                  className="w-full bg-black/40 border border-[var(--color-border-light)] rounded-xl p-4 text-sm text-[var(--color-text-main)] outline-none focus:border-[var(--color-accent)] h-32 mb-4"
-                  placeholder={`Speak your mind through ${testimonialType}...`}
-                />
+                {testimonialType === 'text' && (
+                  <textarea 
+                    className="w-full bg-black/40 border border-[var(--color-border-light)] rounded-xl p-4 text-sm text-[var(--color-text-main)] outline-none focus:border-[var(--color-accent)] h-32 mb-4"
+                    placeholder="Speak your mind through text..."
+                  />
+                )}
+                {(testimonialType === 'image' || testimonialType === 'video' || testimonialType === 'audio') && (
+                  <div className="grid grid-cols-2 gap-4 mb-4">
+                      <label className="flex flex-col items-center gap-2 p-6 rounded-xl bg-black/40 border border-white/10 hover:border-[var(--color-accent)] cursor-pointer">
+                        <CloudUpload className="w-8 h-8 text-[var(--color-accent)]" />
+                        <span className="text-xs uppercase font-bold">Upload</span>
+                        <input type="file" className="hidden" onChange={handleFileChange} accept={testimonialType === 'image' ? 'image/*' : testimonialType === 'video' ? 'video/*' : 'audio/*'} />
+                      </label>
+                      <button className="flex flex-col items-center gap-2 p-6 rounded-xl bg-black/40 border border-white/10 hover:border-[var(--color-accent)]">
+                        {testimonialType === 'image' && <Aperture className="w-8 h-8 text-[var(--color-accent)]" />}
+                        {testimonialType === 'video' && <Video className="w-8 h-8 text-[var(--color-accent)]" />}
+                        {testimonialType === 'audio' && <Mic2 className="w-8 h-8 text-[var(--color-accent)]" />}
+                        <span className="text-xs uppercase font-bold">{testimonialType === 'audio' ? 'Record' : 'Capture'}</span>
+                      </button>
+                  </div>
+                )}
+                {preview && (
+                  <div className="mb-4 rounded-xl overflow-hidden border border-white/10">
+                    {testimonialType === 'image' && <img src={preview} alt="Preview" className="w-full h-48 object-cover" />}
+                    {testimonialType === 'video' && <video src={preview} controls className="w-full h-48 object-cover" />}
+                    {testimonialType === 'audio' && <div className="p-4 bg-black/60 text-xs font-mono">Audio file ready: {preview.slice(0, 20)}...</div>}
+                  </div>
+                )}
                 <Button className="w-full text-xs uppercase tracking-widest bg-[var(--color-accent)] text-black border-none hover:bg-white">Post Personal Reflection</Button>
               </div>
             )}
@@ -1256,7 +1306,7 @@ const UserDashboard = () => {
             { name: "Dark Chocolate Nemesis", price: "₦12,500", image: "https://lh3.googleusercontent.com/aida-public/AB6AXuBZaWj1eDQLdT0vjxA60R484bfLYrmN-wi1OoOhNqMTlCP8u5-2jGrk4WY_r3zfwXEsgwHq9P1NlGFYnasSt20HIFGRC4RWoA4in5QEOTkeyRNLGqOPoWipg6VKiIJQ8h8kznyoGcxCJWlUTSOIZ08J8xS7TpQOxpCbxLPG3kVEgRyIyrDzeoes3QHrTlcu3KORf_vqvKKEpu_VwE8AuiJVbjNwzaS7AH4XW_uhtywZ1mVHzzAk1HsbuFimoCtjP_k9ZgdSd4Dzn8JA" }
           ].map(p => (
             <div key={p.name} className="group relative rounded-2xl overflow-hidden aspect-[4/3] feature-card">
-              <img src={p.image} alt={p.name} className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-110 transition-all duration-700 opacity-60" />
+              <img src={p.image} alt={p.name} className="w-full h-full object-cover group-hover:scale-110 transition-all duration-700" />
               <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent flex flex-col justify-end p-6">
                 <p className="font-serif text-lg text-white mb-1">{p.name}</p>
                 <Link to="/menu" className="font-sans text-[10px] text-[var(--color-accent)] uppercase tracking-widest font-bold flex items-center gap-2">Explore <ArrowRight className="w-3 h-3" /></Link>
@@ -1560,6 +1610,7 @@ const ProductDetailPage = ({ menuData, cart, updateCart }: { menuData: any, cart
     const allDishes = Object.values(menuData).flat() as any[];
     const allDishNames = allDishes.map(d => d.name);
     const [userPairings, setUserPairings] = useState<string[]>(dish.pairings || []);
+    const [pairingsEnabled, setPairingsEnabled] = useState(false);
 
     const menuGroupOptions = Object.entries(menuData).map(([category, items]: [string, any]) => ({
         label: category,
@@ -1600,13 +1651,29 @@ const ProductDetailPage = ({ menuData, cart, updateCart }: { menuData: any, cart
             suggestions = [...shuffledFood.slice(0, 3), ...shuffledBev.slice(0, 1)];
         }
         
-        if (suggestions.length < 4) {
+        if (suggestions.length < 4 && userPairings.length === 0) {
             const extra = allDishes.filter(d => d.name !== dish.name && !suggestions.find(s => s.name === d.name));
             suggestions = [...suggestions, ...extra.slice(0, 4 - suggestions.length)];
         }
         
-        return suggestions.slice(0, 4);
+        return suggestions;
     }, [dish, userPairings, allDishes]);
+
+    const calculateTotal = useMemo(() => {
+        const dishPrice = parseInt(dish.price.replace(/[^\d]/g, '')) || 0;
+        if (!pairingsEnabled) return dishPrice;
+        
+        const pairingsPrice = suggestedPairings.reduce((sum, p) => {
+            const pPrice = parseInt(p.price.replace(/[^\d]/g, '')) || 0;
+            return sum + pPrice;
+        }, 0);
+        
+        return dishPrice + pairingsPrice;
+    }, [dish.price, suggestedPairings, pairingsEnabled]);
+
+    const formatCurrency = (num: number) => {
+        return "₦" + num.toLocaleString();
+    };
 
     const innerCircle = [
         { user: "Alexander V.", combination: "Double Truffle + Reserve Cabernet", date: "2 nights ago" },
@@ -1734,8 +1801,10 @@ const ProductDetailPage = ({ menuData, cart, updateCart }: { menuData: any, cart
                                                                         key={d.name}
                                                                         onClick={() => {
                                                                             if (!isAdded) {
-                                                                                setUserPairings([...userPairings, d.name]);
+                                                                                const currentNames = suggestedPairings.map(s => s.name);
+                                                                                setUserPairings([...currentNames, d.name]);
                                                                                 setShowPairingModal(false);
+                                                                                if (!pairingsEnabled) setPairingsEnabled(true);
                                                                             }
                                                                         }}
                                                                         onMouseEnter={() => setHoveredModalImage(d.image)}
@@ -1940,15 +2009,25 @@ const ProductDetailPage = ({ menuData, cart, updateCart }: { menuData: any, cart
                         </div>
 
                         {/* Section 2: Interactive Sommelier Pairings */}
-                        <div className="bg-[var(--color-bg-surface)] rounded-[0.5rem] p-4 lg:p-10 border border-[var(--color-border-heavy)] relative overflow-visible backdrop-blur-[40px] shadow-[0_40px_100px_rgba(0,0,0,0.5)]">
-                             <div className="flex flex-col mb-10 gap-2">
+                        <div className={`bg-[var(--color-bg-surface)] rounded-[0.5rem] p-4 lg:p-10 border border-[var(--color-border-heavy)] relative overflow-visible backdrop-blur-[40px] shadow-[0_40px_100px_rgba(0,0,0,0.5)] transition-opacity duration-500 ${!pairingsEnabled ? 'opacity-40' : 'opacity-100'}`}>
+                             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-6">
                                 <div>
                                     <h3 className="font-serif text-4xl mb-2 italic tracking-tight text-[var(--color-text-main)]">Interactive Sommelier Pairings</h3>
                                     <p className="font-mono text-[9px] uppercase tracking-[0.4em] text-[var(--color-accent)] font-bold pl-1">The science of harmonic resonance</p>
                                 </div>
+                                
+                                <div className="flex items-center gap-4 bg-[var(--color-bg-dark)]/50 p-2 pl-4 rounded-full border border-[var(--color-border-light)]">
+                                    <span className="font-mono text-[10px] uppercase tracking-widest text-[var(--color-text-dimmed)] font-bold">Include Pairings</span>
+                                    <button 
+                                        onClick={() => setPairingsEnabled(!pairingsEnabled)}
+                                        className={`w-12 h-6 rounded-full relative transition-all duration-300 shadow-inner ${pairingsEnabled ? 'bg-[var(--color-accent)]' : 'bg-white/5'}`}
+                                    >
+                                        <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-md transition-all duration-300 ${pairingsEnabled ? 'left-7' : 'left-1'}`}></div>
+                                    </button>
+                                </div>
                              </div>
 
-                             <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch">
+                             <div className={`grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-stretch transition-all duration-500 ${!pairingsEnabled ? 'pointer-events-none' : ''}`}>
                                 {suggestedPairings.map((p: any, idx) => {
                                     return (
                                         <motion.div 
@@ -1970,8 +2049,13 @@ const ProductDetailPage = ({ menuData, cart, updateCart }: { menuData: any, cart
                                                 </div>
 
                                                 <button 
-                                                    onClick={() => setUserPairings(userPairings.filter(name => name !== p.name))}
-                                                    className="absolute top-3 right-3 w-8 h-8 rounded-[0.25rem] bg-[var(--color-bg-overlay)] text-[var(--color-text-main)] flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all hover:bg-[var(--color-accent)] hover:text-black border border-[var(--color-border-light)]"
+                                                    onClick={() => {
+                                                        if (suggestedPairings.length <= 1) return;
+                                                        const currentNames = suggestedPairings.map(s => s.name);
+                                                        setUserPairings(currentNames.filter(name => name !== p.name));
+                                                    }}
+                                                    className={`absolute top-3 right-3 w-8 h-8 rounded-[0.25rem] bg-black/80 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all border border-white/10 shadow-2xl z-10 ${suggestedPairings.length <= 1 ? 'cursor-not-allowed opacity-50' : 'hover:bg-red-500 hover:text-white'}`}
+                                                    title={suggestedPairings.length <= 1 ? "At least one pairing required" : "Remove pairing"}
                                                 >
                                                     <X className="w-4 h-4" />
                                                 </button>
@@ -1981,15 +2065,17 @@ const ProductDetailPage = ({ menuData, cart, updateCart }: { menuData: any, cart
                                 })}
 
                                 {/* Add Pairing Placeholder Card */}
-                                <div 
-                                    className="border-2 border-dashed border-[var(--color-border-heavy)] rounded-lg flex flex-col items-center justify-center min-h-[150px] gap-4 group cursor-pointer hover:border-[var(--color-accent)] hover:bg-[var(--color-bg-surface-light)] transition-all bg-[var(--color-bg-dark)]/50"
-                                    onClick={() => setShowPairingModal(true)}
-                                >
-                                    <div className="w-12 h-12 rounded-full bg-[var(--color-bg-surface-light)] border border-[var(--color-border-heavy)] flex items-center justify-center group-hover:bg-[var(--color-accent)] group-hover:text-black transition-all group-hover:scale-110">
-                                        <Plus className="w-5 h-5 text-[var(--color-text-main)] group-hover:text-black" />
+                                {suggestedPairings.length < 10 && (
+                                    <div 
+                                        className="border-2 border-dashed border-[var(--color-border-heavy)] rounded-lg flex flex-col items-center justify-center min-h-[150px] gap-4 group cursor-pointer hover:border-[var(--color-accent)] hover:bg-[var(--color-bg-surface-light)] transition-all bg-[var(--color-bg-dark)]/50"
+                                        onClick={() => setShowPairingModal(true)}
+                                    >
+                                        <div className="w-12 h-12 rounded-full bg-[var(--color-bg-surface-light)] border border-[var(--color-border-heavy)] flex items-center justify-center group-hover:bg-[var(--color-accent)] group-hover:text-black transition-all group-hover:scale-110">
+                                            <Plus className="w-5 h-5 text-[var(--color-text-main)] group-hover:text-black" />
+                                        </div>
+                                        <p className="font-mono text-[9px] uppercase tracking-[0.3em] text-[var(--color-text-dimmed)] group-hover:text-[var(--color-text-main)] transition-colors font-bold text-center">Add Pairing</p>
                                     </div>
-                                    <p className="font-mono text-[9px] uppercase tracking-[0.3em] text-[var(--color-text-dimmed)] group-hover:text-[var(--color-text-main)] transition-colors font-bold text-center">Add Pairing</p>
-                                </div>
+                                )}
                              </div>
 
                              <div className="mt-12 pt-10 border-t border-[var(--color-border-light)] flex justify-center">
@@ -2058,10 +2144,21 @@ const ProductDetailPage = ({ menuData, cart, updateCart }: { menuData: any, cart
                              
                              {/* THE STICKY PRICE BOX SECTION */}
                              <div className="mb-8 border-b border-[var(--color-border-heavy)] pb-8">
-                                <p className="font-serif text-7xl text-[var(--color-text-main)] tracking-tighter mb-4 leading-none">
-                                    {dish.price}
+                                <p className="font-serif text-7xl text-[var(--color-text-main)] tracking-tighter mb-4 leading-none truncate pr-2">
+                                    {formatCurrency(calculateTotal)}
                                 </p>
-                                <p className="font-sans text-[10px] text-[var(--color-text-dimmed)] italic uppercase tracking-widest font-bold">Inclusive of bespoke preparation.</p>
+                                <div className="flex items-center gap-2">
+                                    <p className="font-sans text-[10px] text-[var(--color-text-dimmed)] italic uppercase tracking-widest font-bold">
+                                        {pairingsEnabled ? "Pairing resonance included." : "Base preparation only."}
+                                    </p>
+                                    {pairingsEnabled && (
+                                        <div className="flex gap-1">
+                                            <span className="w-1 h-1 rounded-full bg-[var(--color-accent)] animate-pulse"></span>
+                                            <span className="w-1 h-1 rounded-full bg-[var(--color-accent)] animate-pulse delay-75"></span>
+                                            <span className="w-1 h-1 rounded-full bg-[var(--color-accent)] animate-pulse delay-150"></span>
+                                        </div>
+                                    )}
+                                </div>
                              </div>
 
                              <div className="space-y-8">
@@ -2194,7 +2291,7 @@ const CustomDatePicker = ({ value, onChange }: { value: Date | null, onChange: (
   );
 };
 
-const CustomSelect = ({ value, onChange, options, placeholder, icon, menuClassName, onHoverItem }: any) => {
+const CustomSelect = ({ value, onChange, options, placeholder, icon, menuClassName, onHoverItem, variant }: any) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [hoveredImage, setHoveredImage] = useState<string | null>(null);
@@ -2245,6 +2342,8 @@ const CustomSelect = ({ value, onChange, options, placeholder, icon, menuClassNa
     if (onHoverItem) onHoverItem(null);
   };
 
+  const isDense = variant === 'dense';
+
   return (
     <div className={`w-full relative CustomSelect-container`} ref={containerRef}>
       <div 
@@ -2262,46 +2361,48 @@ const CustomSelect = ({ value, onChange, options, placeholder, icon, menuClassNa
             initial={{ opacity: 0, scale: 0.98, y: -10 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.98, y: -10 }}
-            className={`absolute top-[calc(100%+12px)] left-0 w-full z-[10000] bg-[#1a1a1a]/70 backdrop-blur-3xl border border-white/5 rounded-2xl shadow-[0_100px_150px_rgba(0,0,0,0.9)] overflow-hidden flex flex-col ${menuClassName || ''}`}
-            style={{ WebkitBackdropFilter: 'blur(40px)' }}
+            className={`absolute top-[calc(100%+12px)] left-0 w-full z-[10000] ${isDense ? 'bg-[#1a1a1a]' : 'bg-[#1a1a1a]/70 backdrop-blur-3xl'} border border-white/5 rounded-2xl shadow-[0_100px_150px_rgba(0,0,0,0.9)] overflow-hidden flex flex-col ${menuClassName || ''}`}
+            style={isDense ? {} : { WebkitBackdropFilter: 'blur(40px)' }}
           >
-            <div className="p-4 border-b border-white/5 bg-[#1a1a1a]/40 sticky top-0 z-10">
-               <div className="flex items-center gap-3 px-4 py-3 bg-[#0d0d0d] rounded-xl border border-white/5 focus-within:border-[#e39a28]/40 transition-all">
-                 <Search className="w-4 h-4 text-white/20" />
-                 <input 
-                   ref={inputRef}
-                   type="text" 
-                   value={searchQuery}
-                   onChange={(e) => setSearchQuery(e.target.value)}
-                   className="bg-transparent border-none outline-none text-sm text-white w-full placeholder-white/20 font-sans"
-                   placeholder="Search options..."
-                   autoFocus
-                 />
-               </div>
-            </div>
+            {!isDense && (
+              <div className={`p-4 border-b border-white/5 bg-[#1a1a1a]/40 sticky top-0 z-10`}>
+                 <div className={`flex items-center gap-3 px-4 py-3 bg-[#0d0d0d] rounded-xl border border-white/5 focus-within:border-[#e39a28]/40 transition-all`}>
+                   <Search className="w-4 h-4 text-white/20" />
+                   <input 
+                     ref={inputRef}
+                     type="text" 
+                     value={searchQuery}
+                     onChange={(e) => setSearchQuery(e.target.value)}
+                     className="bg-transparent border-none outline-none text-sm text-white w-full placeholder-white/20 font-sans"
+                     placeholder="Search options..."
+                     autoFocus
+                   />
+                 </div>
+              </div>
+            )}
 
-            <div className="max-h-[60vh] overflow-y-auto beautiful-scrollbar p-3 space-y-4 pt-4 pb-6">
+            <div className={`max-h-[50vh] overflow-y-auto beautiful-scrollbar ${isDense ? 'p-1.5' : 'p-3 pt-4 pb-6'} ${isDense ? 'space-y-0.5' : 'space-y-4'}`}>
               {filteredOptions.length === 0 ? (
                  <div className="p-8 text-center text-sm text-white/30 italic font-serif">Silence of the harvest.</div>
               ) : (
-                  filteredOptions.map((group: any, gIdx: number) => (
-                     <div key={gIdx} className="space-y-3">
+                   filteredOptions.map((group: any, gIdx: number) => (
+                      <div key={gIdx} className={isDense ? 'space-y-0.5' : 'space-y-3'}>
                         {(group.label || group.category) && (
-                          <div className="px-3">
+                          <div className={isDense ? 'px-2 py-1' : 'px-3'}>
                              <h2 className="font-serif italic text-[11px] uppercase tracking-[0.4em] text-white/30 font-bold">
                                 {group.label || group.category}
                              </h2>
-                             <div className="h-[1px] w-full bg-white/5 mt-1.5"></div>
+                             {!isDense && <div className="h-[1px] w-full bg-white/5 mt-1.5"></div>}
                           </div>
                         )}
-                        <div className="flex flex-col gap-1">
+                        <div className={`flex flex-col ${isDense ? 'gap-px' : 'gap-1'}`}>
                            {(group.items || []).map((item: any) => {
                              const isSelected = item.value === value;
                              return (
                                <button
                                  key={item.value}
                                  type="button"
-                                 className={`group relative flex items-center gap-5 p-2 rounded-2xl text-left transition-all duration-300 border ${isSelected ? 'bg-white/5 border-[#e39a28]/40 shadow-[0_15px_30px_rgba(0,0,0,0.4)]' : 'bg-transparent border-transparent hover:bg-white/5 hover:border-[#e39a28]/20'}`}
+                                 className={`group relative flex items-center ${isDense ? 'py-1.5 px-3 gap-2.5' : 'p-2.5 gap-5'} rounded-xl text-left transition-all duration-300 border ${isSelected ? 'bg-white/5 border-[#e39a28]/40 shadow-[0_15px_30px_rgba(0,0,0,0.4)]' : 'bg-transparent border-transparent hover:bg-white/5 hover:border-[#e39a28]/20'}`}
                                  onClick={() => {
                                    onChange(item.value);
                                    // Keep open per user request
@@ -2315,35 +2416,41 @@ const CustomSelect = ({ value, onChange, options, placeholder, icon, menuClassNa
                                    if (onHoverItem) onHoverItem(null);
                                  }}
                                >
-                                  <div className={`w-14 h-14 rounded-full overflow-hidden shrink-0 border-2 transition-all duration-500 ${isSelected ? 'border-[#e39a28] scale-105 shadow-[0_0_15px_rgba(227,154,40,0.2)]' : 'border-white/10 group-hover:border-[#e39a28]/60'}`}>
-                                    <img src={item.image} alt={item.label} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
-                                  </div>
+                                  {item.image && (
+                                    <div className={`w-14 h-14 rounded-full overflow-hidden shrink-0 border-2 transition-all duration-500 ${isSelected ? 'border-[#e39a28] scale-105 shadow-[0_0_15px_rgba(227,154,40,0.2)]' : 'border-white/10 group-hover:border-[#e39a28]/60'}`}>
+                                      <img src={item.image} alt={item.label} className="w-full h-full object-cover" referrerPolicy="no-referrer" />
+                                    </div>
+                                  )}
 
                                   <div className="flex-1 min-w-0 pr-3">
                                      <div className="flex justify-between items-baseline mb-0.5">
-                                        <h4 className={`font-serif text-lg leading-tight transition-colors truncate pr-2 ${isSelected ? 'text-[#e39a28] font-bold' : 'text-white/80'}`}>
+                                        <h4 className={`font-serif leading-tight transition-colors truncate pr-2 ${isSelected ? 'text-[#e39a28] font-bold' : 'text-white/80'} ${isDense ? 'text-base' : 'text-lg'}`}>
                                           {item.label}
                                         </h4>
-                                        <span className={`font-mono text-base transition-colors shrink-0 ${isSelected ? 'text-[#e39a28] font-bold' : 'text-white/30'}`}>
-                                          {item.price}
-                                        </span>
+                                        {item.price && (
+                                          <span className={`font-mono transition-colors shrink-0 ${isSelected ? 'text-[#e39a28] font-bold' : 'text-white/30'} ${isDense ? 'text-sm' : 'text-base'}`}>
+                                            {item.price}
+                                          </span>
+                                        )}
                                      </div>
-                                     <p className={`text-[10px] leading-relaxed transition-colors line-clamp-1 uppercase tracking-[0.12em] font-medium ${isSelected ? 'text-[#e39a28]/70' : 'text-white/20'}`}>
-                                       {item.desc}
-                                     </p>
+                                     {item.desc && (
+                                       <p className={`text-[10px] leading-relaxed transition-colors line-clamp-1 uppercase tracking-[0.12em] font-medium ${isSelected ? 'text-[#e39a28]/70' : 'text-white/20'}`}>
+                                         {item.desc}
+                                       </p>
+                                     )}
                                   </div>
 
                                   {isSelected && (
-                                    <div className="absolute top-2 right-2 w-5 h-5 bg-[#e39a28] rounded-[3px] flex items-center justify-center text-black shadow-lg">
-                                       <Check className="w-3.5 h-3.5 stroke-[4px]" />
+                                    <div className={`absolute top-2 right-2 ${isDense ? 'w-4 h-4' : 'w-5 h-5'} bg-[#e39a28] rounded-[3px] flex items-center justify-center text-black shadow-lg`}>
+                                       <Check className={isDense ? 'w-2.5 h-2.5 stroke-[4px]' : 'w-3.5 h-3.5 stroke-[4px]'} />
                                     </div>
                                   )}
                                </button>
                              );
                            })}
                         </div>
-                     </div>
-                  ))
+                      </div>
+                   ))
               )}
             </div>
           </motion.div>
@@ -2729,7 +2836,7 @@ const CheckoutPage = ({ cart, menuData }: { cart: Record<string, number>, menuDa
             {/* 4. NUMBER OF GUESTS */}
             <div className="flex flex-col gap-2 pt-6 border-t border-[var(--color-border-light)] relative dish-focus-hide" style={{ zIndex: 80 }}>
               <label className="font-mono text-[9px] uppercase text-[var(--color-text-dimmed)] tracking-[0.3em]">Companions</label>
-              <CustomSelect value={guests} onChange={setGuests} options={guestOptions} placeholder="-- Select guests --" />
+              <CustomSelect value={guests} onChange={setGuests} options={guestOptions} placeholder="-- Select guests --" variant="dense" />
             </div>
 
             {/* 5. ARRIVAL TIME & DATE (DYNAMIC) */}
