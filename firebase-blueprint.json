@@ -1,0 +1,96 @@
+{
+  "entities": {
+    "User": {
+      "title": "User",
+      "description": "Represents a user in the application.",
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string",
+          "description": "The user's email address."
+        },
+        "firstName": {
+          "type": "string",
+          "description": "The user's first name."
+        },
+        "lastName": {
+          "type": "string",
+          "description": "The user's last name."
+        },
+        "createdAt": {
+          "type": "number",
+          "description": "Creation timestamp."
+        }
+      },
+      "required": ["email", "firstName"]
+    },
+    "Order": {
+      "title": "Order",
+      "description": "Represents an order placed by a user.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "The ID of the user who placed the order."
+        },
+        "email": {
+          "type": "string",
+          "description": "The email of the user who placed the order."
+        },
+        "items": {
+          "type": "array",
+          "description": "The items ordered."
+        },
+        "total": {
+          "type": "string",
+          "description": "Total amount."
+        },
+        "status": {
+          "type": "string",
+          "description": "Current status."
+        },
+        "createdAt": {
+          "type": "number",
+          "description": "Creation timestamp."
+        }
+      },
+      "required": ["userId", "items", "total"]
+    },
+    "MenuData": {
+      "title": "Menu Data",
+      "description": "The entire menu schema stored globally.",
+      "type": "object",
+      "properties": {},
+      "required": []
+    },
+    "UserPairing": {
+      "title": "User Pairing",
+      "description": "A pairing relationship saved by a user.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "dish": { "type": "string" },
+        "pairings": { "type": "array" }
+      },
+      "required": ["userId", "dish", "pairings"]
+    }
+  },
+  "firestore": {
+    "users": {
+      "schema": "User",
+      "description": "Collection of users."
+    },
+    "orders": {
+      "schema": "Order",
+      "description": "Collection of orders."
+    },
+    "system": {
+      "schema": "MenuData",
+      "description": "Global config state."
+    },
+    "userPairings": {
+      "schema": "UserPairing",
+      "description": "Pairings chosen by user."
+    }
+  }
+}

@@ -8,6 +8,14 @@ import { Routes, Route, Link, useLocation, useParams, useNavigate, Navigate } fr
 
 gsap.registerPlugin(ScrollTrigger);
 
+const ScrollToTop = () => {
+  const { pathname } = useLocation();
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [pathname]);
+  return null;
+};
+
 // --- Global UI Overlays ---
 const NoiseOverlay = () => (
   <svg className="noise-overlay" aria-hidden="true" xmlns="http://www.w3.org/2000/svg">
@@ -119,7 +127,7 @@ const Navbar = ({ toggleTheme, isLight, user }: { toggleTheme: () => void, isLig
             <div className="hover-bg rounded-full"></div>
             {isLight ? <Eclipse className="w-4 h-4 relative z-10" /> : <Aperture className="w-4 h-4 relative z-10" />}
           </button>
-          <Link to="/checkout" className="hidden sm:block">
+          <Link to="/place-order" className="hidden sm:block">
             <Button className="px-6 py-2 text-sm border border-white/10">
               Place an order
             </Button>
@@ -141,7 +149,7 @@ const Navbar = ({ toggleTheme, isLight, user }: { toggleTheme: () => void, isLig
         <div className="flex flex-col gap-10 text-center">
           <a href="/#sourcing" className="text-5xl font-serif italic text-[var(--color-text-main)]">Philosophy</a>
           <Link to="/menu" className="text-5xl font-serif italic text-[var(--color-text-main)]">Menu</Link>
-          <Link to="/checkout" className="mt-8">
+          <Link to="/place-order" className="mt-8">
             <Button className="text-2xl px-12 py-5">
               Place an order
             </Button>
@@ -191,7 +199,7 @@ const Hero = () => {
           </h2>
         </div>
         <div className="hero-text w-full max-w-lg">
-          <Link to="/checkout" className="block w-full sm:w-auto">
+          <Link to="/place-order" className="block w-full sm:w-auto">
             <Button className="w-full border-none">
               Place an order <ArrowRight className="w-5 h-5" />
             </Button>
@@ -463,7 +471,7 @@ const CheckoutSection = () => (
         Banjue Seat is reserved for the audacious. Secure your immersive culinary experience and leave bland behind.
       </p>
       <div className="flex justify-center flex-col sm:flex-row gap-6 items-center">
-        <Link to="/checkout" className="block">
+        <Link to="/place-order" className="block">
           <Button className="w-full sm:w-auto text-lg px-12 py-5 transform scale-110 border-none">
             Place an order 
           </Button>
@@ -683,7 +691,7 @@ const Footer = () => (
         <ul className="space-y-3 font-sans text-sm text-[var(--color-text-muted)]">
           <li><a href="/#sourcing" className="hover:text-[var(--color-text-main)] transition-colors">Philosophy</a></li>
           <li><Link to="/menu" className="hover:text-[var(--color-text-main)] transition-colors">Menu</Link></li>
-          <li><Link to="/checkout" className="hover:text-[var(--color-text-main)] transition-colors">Reserve</Link></li>
+          <li><Link to="/place-order" className="hover:text-[var(--color-text-main)] transition-colors">Reserve</Link></li>
         </ul>
       </div>
       <div>
@@ -893,7 +901,7 @@ const TrackedMenuItem = ({ item, idx, containerRef, vh }: any) => {
             </div>
 
             {isFocused && (
-              <Link to="/checkout" className="shrink-0 animate-in fade-in zoom-in duration-700 pl-2 pr-1">
+              <Link to="/place-order" className="shrink-0 animate-in fade-in zoom-in duration-700 pl-2 pr-1">
                 <div className="w-10 h-10 rounded-full bg-[var(--color-primary)] flex items-center justify-center text-white shadow-xl hover:scale-110 active:scale-95 transition-transform">
                    <ArrowRight className="w-5 h-5" />
                 </div>
@@ -1085,7 +1093,7 @@ const MenuPage = ({ cart, updateCart, cartCount, menuData }: { cart: Record<stri
                       </div>
                   </div>
                   
-                  <Link to="/checkout" className="bg-[var(--color-primary)] hover:bg-[var(--color-accent)] text-white hover:text-black px-10 py-4 rounded-full font-sans text-xs font-bold uppercase tracking-[0.25em] transition-all flex items-center gap-4 shadow-xl group">
+                  <Link to="/place-order" className="bg-[var(--color-primary)] hover:bg-[var(--color-accent)] text-white hover:text-black px-10 py-4 rounded-full font-sans text-xs font-bold uppercase tracking-[0.25em] transition-all flex items-center gap-4 shadow-xl group">
                      Proceed to Table
                      <ArrowRight className="w-4 h-4 group-hover:translate-x-2 transition-transform" />
                   </Link>
@@ -1173,11 +1181,7 @@ const MenuPage = ({ cart, updateCart, cartCount, menuData }: { cart: Record<stri
 
 // --- Dashboard & Admin Components ---
 
-const UserDashboard = () => {
-  const mockOrders = [
-    { id: 'ORD-9921', date: '2024-03-15', total: '₦42,000', items: ['Hearth-Smoked Diver Scallops', 'Vintage 2012 Reserva'], status: 'Completed' },
-    { id: 'ORD-8812', date: '2024-02-10', total: '₦35,000', items: ['A5 Wagyu Beef Tartare'], status: 'Completed' },
-  ];
+const UserDashboard = ({ userProfile, setUserProfile }: { userProfile: any, setUserProfile: any }) => {
 
   const [testimonialType, setTestimonialType] = useState<string | null>(null);
   const [isEditProfileOpen, setIsEditProfileOpen] = useState(false);
@@ -1214,7 +1218,7 @@ const UserDashboard = () => {
             <img src="https://i.pravatar.cc/150?u=user" alt="User Profile" className="w-full h-full object-cover" />
             <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 flex items-center justify-center text-white text-xs font-bold uppercase tracking-widest transition-opacity">Edit</div>
           </div>
-          <h2 className="font-serif text-3xl text-[var(--color-text-main)] mb-1">Alex Thorne</h2>
+          <h2 className="font-serif text-3xl text-[var(--color-text-main)] mb-1">{userProfile.name}</h2>
           <p className="font-sans text-xs uppercase tracking-widest text-[var(--color-text-dimmed)]">Epicurean Member</p>
           <Link to="/menu">
             <Button className="mt-8 w-full border-none text-[10px] uppercase tracking-widest">Place an Order</Button>
@@ -1224,7 +1228,7 @@ const UserDashboard = () => {
         <div className="md:w-2/3">
           <h3 className="font-serif text-2xl text-[var(--color-text-main)] mb-8 italic">Order History</h3>
           <div className="space-y-4">
-            {mockOrders.map(order => (
+            {userProfile.orders.length > 0 ? userProfile.orders.map((order: any) => (
               <div key={order.id} className="bg-[var(--color-bg-surface-light)]/20 border border-[var(--color-border-light)] p-6 rounded-2xl flex justify-between items-center group hover:border-[var(--color-accent)]/30 transition-all">
                 <div>
                   <div className="flex items-center gap-3 mb-2">
@@ -1235,10 +1239,35 @@ const UserDashboard = () => {
                 </div>
                 <div className="text-right">
                   <p className="font-mono text-lg text-[var(--color-text-main)] mb-1">{order.total}</p>
-                  <span className="px-3 py-1 rounded-full bg-green-500/10 text-green-500 text-[8px] uppercase font-bold tracking-widest">Completed</span>
+                  <span className="px-3 py-1 rounded-full bg-green-500/10 text-green-500 text-[8px] uppercase font-bold tracking-widest">{order.status || 'Completed'}</span>
                 </div>
               </div>
-            ))}
+            )) : (
+              <p className="text-sm text-[var(--color-text-dimmed)] italic">No orders found.</p>
+            )}
+          </div>
+
+          <div className="mt-12">
+            <h3 className="font-serif text-2xl text-[var(--color-text-main)] mb-8 italic">Saved Custom Pairings</h3>
+            <div className="space-y-4">
+                {userProfile.pairings && userProfile.pairings.length > 0 ? userProfile.pairings.map((pairingRecord: any) => (
+                  <div key={pairingRecord.id} className="bg-[var(--color-bg-surface-light)]/20 border border-[var(--color-border-light)] p-6 rounded-2xl flex flex-col group hover:border-[var(--color-primary)]/40 transition-all">
+                    <div className="flex items-center gap-3 mb-4">
+                        <span className="font-serif text-lg text-[var(--color-text-main)]">{pairingRecord.dishName}</span>
+                    </div>
+                    <div className="pl-4 border-l border-white/10 space-y-2">
+                        {pairingRecord.pairings.map((p: string, idx: number) => (
+                          <div key={idx} className="flex items-center gap-3">
+                              <span className="w-1.5 h-1.5 rounded-full bg-[var(--color-accent)]"></span>
+                              <span className="font-mono text-xs text-white/80">{p}</span>
+                          </div>
+                        ))}
+                    </div>
+                  </div>
+                )) : (
+                  <p className="text-sm text-[var(--color-text-dimmed)] italic">No custom pairings saved.</p>
+                )}
+            </div>
           </div>
 
           <div className="mt-12 bg-[var(--color-bg-surface)] p-8 rounded-[2rem] border border-[var(--color-border-light)]">
@@ -1319,34 +1348,107 @@ const UserDashboard = () => {
   );
 };
 
+export const getDefaultPairings = (dishName: string, dishCategory: string, menuData: any) => {
+    const allDishes = Object.values(menuData).flat() as any[];
+    const foodItems = allDishes.filter(d => !d.category?.toLowerCase().includes('drink') && !d.category?.toLowerCase().includes('beverage') && d.name !== dishName);
+    const beverages = allDishes.filter(d => d.category?.toLowerCase().includes('drink') || d.category?.toLowerCase().includes('beverage'));
+    
+    let seed = dishName.split('').reduce((acc: number, char: string) => acc + char.charCodeAt(0), 0);
+    const seededRandom = () => {
+        const x = Math.sin(seed++) * 10000;
+        return x - Math.floor(x);
+    };
+
+    const shuffledFood = [...foodItems].sort((a, b) => {
+        const aMatch = a.category === dishCategory ? 2 : 0;
+        const bMatch = b.category === dishCategory ? 2 : 0;
+        return (bMatch + seededRandom()) - (aMatch + seededRandom());
+    });
+    const shuffledBev = [...beverages].sort(() => 0.5 - seededRandom());
+    
+    const suggestions = [...shuffledFood.slice(0, 3), ...shuffledBev.slice(0, 1)];
+    
+    if (suggestions.length < 4) {
+        const extra = allDishes.filter(d => d.name !== dishName && !suggestions.find(s => s.name === d.name));
+        suggestions.push(...extra.slice(0, 4 - suggestions.length));
+    }
+    
+    return suggestions.map(s => s.name);
+};
+
 const AdminCMS = ({ menuData, setMenuData }: { menuData: any, setMenuData: any }) => {
   const [selectedDish, setSelectedDish] = useState<any>(null);
-  const [editForm, setEditForm] = useState({ name: '', desc: '', price: '', image: '', category: '', pairings: [] as string[] });
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [showAdminPairingModal, setShowAdminPairingModal] = useState(false);
+  const [editForm, setEditForm] = useState({ name: '', desc: '', price: '', image: '', images: [] as string[], category: '', pairings: [] as string[] });
+  const [activeTab, setActiveTab] = useState<'menu' | 'users' | 'orders' | 'comments' | 'notifications'>('menu');
 
   const allDishNames = Object.values(menuData).flat().map((d: any) => d.name);
 
+  const [users, setUsers] = useState<any[]>([]);
+  const [orders, setOrders] = useState<any[]>([]);
+
+  useEffect(() => {
+     const fetchAdminData = async () => {
+         try {
+             const { collection, getDocs, orderBy, query } = await import('firebase/firestore');
+             const { db } = await import('./firebase');
+             const uSnap = await getDocs(query(collection(db, 'users'), orderBy('createdAt', 'desc')));
+             const oSnap = await getDocs(query(collection(db, 'orders'), orderBy('createdAt', 'desc')));
+             setUsers(uSnap.docs.map(d => ({id: d.id, ...d.data()})));
+             setOrders(oSnap.docs.map(d => ({id: d.id, ...d.data()})));
+         } catch (e) {
+             console.error('Cant fetch admin data', e);
+         }
+     };
+     fetchAdminData();
+  }, []);
+
   const startEdit = (dish: any, category: string) => {
     setSelectedDish({ ...dish, oldName: dish.name, category });
-    setEditForm({ ...dish, category, pairings: dish.pairings || [] });
+    const initialPairings = dish.pairings !== undefined ? dish.pairings : getDefaultPairings(dish.name, category, menuData);
+    setEditForm({ ...dish, category, pairings: initialPairings, images: dish.images || (dish.image ? [dish.image] : []) });
+    setIsModalOpen(true);
+  };
+
+  const startCreate = () => {
+    setSelectedDish(null);
+    setEditForm({ name: '', desc: '', price: '', image: '', images: [], category: Object.keys(menuData)[0] || 'Appetizers', pairings: [] });
+    setIsModalOpen(true);
   };
 
   const handleSave = () => {
     const newData = { ...menuData };
-    const catItems = [...newData[editForm.category]];
-    const idx = catItems.findIndex(i => i.name === selectedDish.oldName);
+    const savedImage = editForm.images.length > 0 ? editForm.images[0] : editForm.image;
     
-    if (idx > -1) {
-      catItems[idx] = { 
-        name: editForm.name, 
-        desc: editForm.desc, 
-        price: editForm.price, 
-        image: editForm.image,
-        pairings: editForm.pairings
-      };
-      newData[editForm.category] = catItems;
-      setMenuData(newData);
-      setSelectedDish(null);
+    if (selectedDish) {
+      const catItems = [...newData[editForm.category]];
+      const idx = catItems.findIndex(i => i.name === selectedDish.oldName);
+      if (idx > -1) {
+        catItems[idx] = { 
+          name: editForm.name,
+          desc: editForm.desc, 
+          price: editForm.price, 
+          image: savedImage,
+          images: editForm.images,
+          pairings: editForm.pairings
+        };
+        newData[editForm.category] = catItems;
+      }
+    } else {
+      if (!newData[editForm.category]) newData[editForm.category] = [];
+      newData[editForm.category].push({ 
+          name: editForm.name, 
+          desc: editForm.desc, 
+          price: editForm.price, 
+          image: savedImage,
+          images: editForm.images,
+          pairings: editForm.pairings
+      });
     }
+
+    setMenuData(newData);
+    setIsModalOpen(false);
   };
 
   const handleDelete = (name: string, category: string) => {
@@ -1355,33 +1457,28 @@ const AdminCMS = ({ menuData, setMenuData }: { menuData: any, setMenuData: any }
     setMenuData(newData);
   };
 
-  const handleAdd = () => {
-    const newData = { ...menuData };
-    if (!newData[editForm.category]) newData[editForm.category] = [];
-    newData[editForm.category].push({ 
-        name: editForm.name, 
-        desc: editForm.desc, 
-        price: editForm.price, 
-        image: editForm.image,
-        pairings: editForm.pairings
-    });
-    setMenuData(newData);
-    setEditForm({ name: '', desc: '', price: '', image: '', category: 'Appetizers', pairings: [] });
-  };
-
-  return (
-    <div className="min-h-screen bg-[var(--color-bg-dark)] pt-32 pb-20 px-4 md:px-8">
-      <div className="max-w-6xl mx-auto flex flex-col lg:flex-row gap-16">
-        <div className="lg:w-2/3">
-          <h2 className="font-serif text-3xl text-[var(--color-text-main)] mb-12 italic tracking-tight">Culinary Archive (CMS)</h2>
+  const renderContent = () => {
+    if (activeTab === 'menu') {
+      return (
+        <div className="w-full">
+          <div className="flex justify-between items-center mb-12">
+            <h2 className="font-serif text-3xl text-[var(--color-text-main)] italic tracking-tight">Menu Options (CMS)</h2>
+            <div className="flex gap-4">
+               <Button onClick={startCreate} className="border-none bg-[var(--color-primary)] text-white text-[10px] uppercase">Create Item</Button>
+            </div>
+          </div>
           
           <div className="space-y-12">
             {Object.entries(menuData).map(([category, items]: [string, any]) => (
               <div key={category}>
                 <h3 className="font-sans text-xs uppercase tracking-[0.4em] text-[var(--color-accent)] mb-6 font-bold">{category}</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {items.map((item: any) => (
-                    <div key={item.name} className="bg-[var(--color-bg-surface-light)]/10 border border-[var(--color-border-light)] p-4 rounded-xl flex gap-4 items-center group">
+                    <div 
+                      key={item.name} 
+                      className="bg-[var(--color-bg-surface-light)]/10 border border-[var(--color-border-light)] p-4 rounded-xl flex gap-4 items-center group cursor-pointer hover:border-[var(--color-primary)] transition-all"
+                      onClick={() => startEdit(item, category)}
+                    >
                       <div className="w-16 h-16 rounded-lg overflow-hidden shrink-0 grayscale group-hover:grayscale-0 transition-all">
                         <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
                       </div>
@@ -1389,9 +1486,8 @@ const AdminCMS = ({ menuData, setMenuData }: { menuData: any, setMenuData: any }
                         <p className="font-serif text-sm text-[var(--color-text-main)] truncate">{item.name}</p>
                         <p className="font-mono text-[10px] text-[var(--color-accent)]">{item.price}</p>
                       </div>
-                      <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button onClick={() => startEdit(item, category)} className="p-2 text-[var(--color-text-dimmed)] hover:text-white"><Plus className="w-4 h-4 rotate-45" /></button>
-                        <button onClick={() => handleDelete(item.name, category)} className="p-2 text-red-500/50 hover:text-red-500"><Trash2 className="w-4 h-4" /></button>
+                      <div className="flex gap-2">
+                        <button onClick={(e) => { e.stopPropagation(); handleDelete(item.name, category); }} className="p-2 text-red-500/50 hover:text-red-500"><Trash2 className="w-4 h-4" /></button>
                       </div>
                     </div>
                   ))}
@@ -1400,80 +1496,238 @@ const AdminCMS = ({ menuData, setMenuData }: { menuData: any, setMenuData: any }
             ))}
           </div>
         </div>
+      );
+    }
 
-        <div className="lg:w-1/3">
-          <div className="sticky top-32 bg-[var(--color-bg-surface)] p-8 rounded-[2rem] border border-[var(--color-border-heavy)] shadow-2xl">
-            <h3 className="font-serif text-2xl text-[var(--color-text-main)] mb-8 italic">{selectedDish ? 'Modify Pairing' : 'Architect New Pairing'}</h3>
-            <div className="space-y-6">
-              <div className="flex flex-col gap-2">
-                <label className="font-mono text-[9px] uppercase text-[var(--color-text-dimmed)] tracking-widest">Name</label>
-                <input value={editForm.name} onChange={(e) => setEditForm({...editForm, name: e.target.value})} className="bg-black/40 border border-[var(--color-border-light)] rounded-xl p-4 text-xs text-[var(--color-text-main)] focus:border-[var(--color-accent)] outline-none" placeholder="Dish Name" />
-              </div>
-              <div className="flex flex-col gap-2">
-                <label className="font-mono text-[9px] uppercase text-[var(--color-text-dimmed)] tracking-widest">Description</label>
-                <textarea value={editForm.desc} onChange={(e) => setEditForm({...editForm, desc: e.target.value})} className="bg-black/40 border border-[var(--color-border-light)] rounded-xl p-4 text-xs text-[var(--color-text-main)] focus:border-[var(--color-accent)] outline-none h-24" placeholder="Brief epicurean description" />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex flex-col gap-2">
-                  <label className="font-mono text-[9px] uppercase text-[var(--color-text-dimmed)] tracking-widest">Price</label>
-                  <input value={editForm.price} onChange={(e) => setEditForm({...editForm, price: e.target.value})} className="bg-black/40 border border-[var(--color-border-light)] rounded-xl p-4 text-xs text-[var(--color-text-main)] focus:border-[var(--color-accent)] outline-none" placeholder="₦..." />
+    if (activeTab === 'users') {
+      return (
+        <div className="w-full">
+          <h2 className="font-serif text-3xl text-[var(--color-text-main)] mb-8 italic tracking-tight">Users</h2>
+          <div className="space-y-4 max-h-[700px] overflow-y-auto pr-4 custom-scrollbar">
+             {users.length === 0 ? <p className="text-[var(--color-text-dimmed)] text-xs font-mono">No users found.</p> : users.map(u => (
+                <div key={u.id} className="bg-[var(--color-bg-surface-light)]/10 border border-[var(--color-border-light)] p-4 rounded-xl">
+                  <p className="font-sans font-bold text-[var(--color-text-main)]">{u.firstName} {u.lastName}</p>
+                  <p className="font-mono text-[10px] text-[var(--color-primary)]">{u.email}</p>
+                  <p className="font-mono text-[9px] text-[var(--color-text-dimmed)] mt-2">ID: {u.id}</p>
                 </div>
-                <div className="flex flex-col gap-2">
-                  <label className="font-mono text-[9px] uppercase text-[var(--color-text-dimmed)] tracking-widest">Category</label>
-                  <select value={editForm.category} onChange={(e) => setEditForm({...editForm, category: e.target.value})} className="bg-black/40 border border-[var(--color-border-light)] rounded-xl p-4 text-xs text-[var(--color-text-main)] focus:border-[var(--color-accent)] outline-none">
-                    {Object.keys(menuData).map(c => <option key={c} value={c}>{c}</option>)}
-                  </select>
-                </div>
-              </div>
-              <div className="flex flex-col gap-2">
-                <label className="font-mono text-[9px] uppercase text-[var(--color-text-dimmed)] tracking-widest">Artifact (Image Link)</label>
-                <input value={editForm.image} onChange={(e) => setEditForm({...editForm, image: e.target.value})} className="bg-black/40 border border-[var(--color-border-light)] rounded-xl p-4 text-xs text-[var(--color-text-main)] focus:border-[var(--color-accent)] outline-none mb-2" placeholder="Image URL" />
-              </div>
-
-              <div className="flex flex-col gap-2">
-                <label className="font-mono text-[9px] uppercase text-[var(--color-text-dimmed)] tracking-widest pl-2">Associated Pairings ({(editForm.pairings || []).length})</label>
-                <div className="flex flex-wrap gap-2 mb-2 min-h-12 border border-[var(--color-border-light)] rounded-xl p-3 bg-black/20">
-                    {(editForm.pairings || []).map(p => (
-                        <div key={p} className="bg-[var(--color-primary)]/20 border border-[var(--color-primary)]/40 text-[var(--color-primary)] px-3 py-1 rounded-full text-[9px] flex items-center gap-2 font-bold font-mono">
-                            {p} 
-                            <button onClick={() => setEditForm({...editForm, pairings: (editForm.pairings || []).filter(i => i !== p)})}><X className="w-2.5 h-2.5" /></button>
-                        </div>
-                    ))}
-                    {(!editForm.pairings || editForm.pairings.length === 0) && <span className="text-[10px] text-white/20 italic">No pairings defined</span>}
-                </div>
-                <select 
-                    onChange={(e) => {
-                        const currentPairings = editForm.pairings || [];
-                        if (e.target.value && !currentPairings.includes(e.target.value)) {
-                            setEditForm({...editForm, pairings: [...currentPairings, e.target.value]});
-                        }
-                    }}
-                    className="bg-black/40 border border-[var(--color-border-light)] rounded-xl p-4 text-xs text-[var(--color-text-main)] focus:border-[var(--color-accent)] outline-none"
-                >
-                    <option value="">+ Append Companion</option>
-                    {(allDishNames || []).filter(n => n !== editForm.name).map(name => (
-                        <option key={name} value={name}>{name}</option>
-                    ))}
-                </select>
-              </div>
-
-              <div className="w-full h-32 rounded-xl bg-black/40 border border-dashed border-[var(--color-border-light)] flex flex-col items-center justify-center gap-2 cursor-pointer hover:bg-black/60 transition-all">
-                <CloudUpload className="w-6 h-6 text-[var(--color-text-dimmed)]" />
-                <span className="text-[10px] text-[var(--color-text-dimmed)] uppercase tracking-widest">Capture Local Artifact</span>
-              </div>
-
-              {selectedDish ? (
-                <div className="flex gap-4 pt-4">
-                  <Button onClick={handleSave} className="flex-1 border-none bg-[var(--color-accent)] text-black text-[10px]">Save Convergence</Button>
-                  <button onClick={() => setSelectedDish(null)} className="flex-1 font-sans text-[10px] uppercase tracking-widest text-[var(--color-text-dimmed)] hover:text-white">Discard</button>
-                </div>
-              ) : (
-                <Button onClick={handleAdd} className="w-full border-none bg-[var(--color-primary)] text-white text-[10px] pt-4 mt-4">Instate Product</Button>
-              )}
-            </div>
+             ))}
           </div>
         </div>
+      );
+    }
+
+    if (activeTab === 'orders') {
+      return (
+        <div className="w-full">
+          <h2 className="font-serif text-3xl text-[var(--color-text-main)] mb-8 italic tracking-tight">Orders</h2>
+          <div className="space-y-4 max-h-[700px] overflow-y-auto pr-4 custom-scrollbar">
+             {orders.length === 0 ? <p className="text-[var(--color-text-dimmed)] text-xs font-mono">No active orders.</p> : orders.map(o => (
+                <div key={o.id} className="bg-[var(--color-bg-surface-light)]/10 border border-[var(--color-border-light)] p-4 rounded-xl">
+                  <div className="flex justify-between items-start mb-2">
+                     <p className="font-mono text-[10px] text-[var(--color-primary)] uppercase">Order {o.id}</p>
+                     <p className="font-mono text-lg font-bold text-[var(--color-text-main)]">{o.total}</p>
+                  </div>
+                  <p className="font-sans text-[11px] text-[var(--color-text-main)] opacity-70 mb-2 leading-relaxed">{o.items?.join(', ')}</p>
+                  <div className="flex justify-between items-center mt-4">
+                     <span className="px-2 py-1 bg-green-500/20 text-green-500 text-[8px] uppercase tracking-widest rounded-full">{o.status}</span>
+                     <span className="font-mono text-[9px] text-[var(--color-text-dimmed)]">{new Date(o.createdAt).toLocaleString()}</span>
+                  </div>
+                </div>
+             ))}
+          </div>
+        </div>
+      );
+    }
+
+    if (activeTab === 'comments') {
+      return (
+        <div className="w-full">
+          <h2 className="font-serif text-3xl text-[var(--color-text-main)] mb-8 italic tracking-tight">Comments & Feedback</h2>
+          <p className="text-[var(--color-text-dimmed)] text-xs font-mono">No feedback available.</p>
+        </div>
+      );
+    }
+
+    if (activeTab === 'notifications') {
+      return (
+        <div className="w-full">
+          <h2 className="font-serif text-3xl text-[var(--color-text-main)] mb-8 italic tracking-tight">System Notifications</h2>
+          <p className="text-[var(--color-text-dimmed)] text-xs font-mono">All systems nominal. No new alerts.</p>
+        </div>
+      );
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-[var(--color-bg-dark)] pt-32 pb-32 px-4 md:px-8 relative flex flex-row items-start">
+      <div className="flex-1 max-w-6xl mx-auto pr-8 md:pr-20">
+         {renderContent()}
       </div>
+
+      {/* Right side navigation that "peeks" in */}
+      <aside className="w-16 sticky top-1/2 -translate-y-1/2 ml-auto">
+        <div className="w-16 hover:w-64 bg-[var(--color-bg-surface)] border-l border-y border-[var(--color-border-heavy)] transition-all duration-300 z-[60] group overflow-hidden rounded-l-[2.5rem] shadow-[-20px_0_40px_rgba(0,0,0,0.5)] h-fit max-h-[70vh] py-12 absolute right-0 top-1/2 -translate-y-1/2">
+           <div className="w-64 flex flex-col p-4 opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">
+              <h3 className="font-sans text-[10px] uppercase tracking-[0.3em] text-[var(--color-text-dimmed)] mb-6 px-4">Navigation</h3>
+              <button 
+                onClick={() => { setActiveTab('menu'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} 
+                className={`text-left px-4 py-4 rounded-xl text-sm transition-all focus:outline-none ${activeTab === 'menu' ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-bold' : 'text-[var(--color-text-main)] hover:bg-white/5'}`}
+              >
+                Menu Options
+              </button>
+              <button 
+                onClick={() => { setActiveTab('users'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} 
+                className={`text-left px-4 py-4 rounded-xl text-sm transition-all focus:outline-none ${activeTab === 'users' ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-bold' : 'text-[var(--color-text-main)] hover:bg-white/5'}`}
+              >
+                Users
+              </button>
+              <button 
+                onClick={() => { setActiveTab('orders'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} 
+                className={`text-left px-4 py-4 rounded-xl text-sm transition-all focus:outline-none ${activeTab === 'orders' ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-bold' : 'text-[var(--color-text-main)] hover:bg-white/5'}`}
+              >
+                Orders
+              </button>
+              <button 
+                onClick={() => { setActiveTab('comments'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} 
+                className={`text-left px-4 py-4 rounded-xl text-sm transition-all focus:outline-none ${activeTab === 'comments' ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-bold' : 'text-[var(--color-text-main)] hover:bg-white/5'}`}
+              >
+                Comments
+              </button>
+              <button 
+                onClick={() => { setActiveTab('notifications'); window.scrollTo({ top: 0, behavior: 'smooth' }); }} 
+                className={`text-left px-4 py-4 rounded-xl text-sm transition-all focus:outline-none ${activeTab === 'notifications' ? 'bg-[var(--color-primary)]/10 text-[var(--color-primary)] font-bold' : 'text-[var(--color-text-main)] hover:bg-white/5'}`}
+              >
+                Notifications
+              </button>
+           </div>
+           {/* Peek indicators */}
+           <div className="absolute inset-y-0 left-0 w-16 flex flex-col items-center justify-center gap-8 group-hover:opacity-0 transition-opacity">
+              <div className={`w-1.5 h-1.5 rounded-full ${activeTab === 'menu' ? 'bg-[var(--color-primary)]' : 'bg-white/20'}`}></div>
+              <div className={`w-1.5 h-1.5 rounded-full ${activeTab === 'users' ? 'bg-[var(--color-primary)]' : 'bg-white/20'}`}></div>
+              <div className={`w-1.5 h-1.5 rounded-full ${activeTab === 'orders' ? 'bg-[var(--color-primary)]' : 'bg-white/20'}`}></div>
+              <div className={`w-1.5 h-1.5 rounded-full ${activeTab === 'comments' ? 'bg-[var(--color-primary)]' : 'bg-white/20'}`}></div>
+              <div className={`w-1.5 h-1.5 rounded-full ${activeTab === 'notifications' ? 'bg-[var(--color-primary)]' : 'bg-white/20'}`}></div>
+              <ChevronLeft className="w-4 h-4 mt-4 text-[var(--color-text-dimmed)] animate-pulse" />
+           </div>
+        </div>
+      </aside>
+
+      <AnimatePresence>
+        {isModalOpen && (
+          <motion.div 
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm"
+            onClick={() => setIsModalOpen(false)}
+          >
+            <motion.div 
+               initial={{ y: 20, scale: 0.95 }} animate={{ y: 0, scale: 1 }} exit={{ y: 20, scale: 0.95 }}
+               className="bg-[var(--color-bg-surface)] p-8 rounded-[2rem] border border-[var(--color-border-heavy)] shadow-2xl max-w-lg w-full max-h-[90vh] overflow-y-auto custom-scrollbar"
+               onClick={(e) => e.stopPropagation()}
+            >
+              <h3 className="font-serif text-2xl text-[var(--color-text-main)] mb-8 italic">{selectedDish ? 'Edit Menu Item' : 'Create Menu Item'}</h3>
+              <div className="space-y-6">
+                <div className="flex flex-col gap-2">
+                  <label className="font-mono text-[9px] uppercase text-[var(--color-text-dimmed)] tracking-widest">Name</label>
+                  <input 
+                    value={selectedDish ? selectedDish.name : editForm.name} 
+                    onChange={(e) => { if (!selectedDish) setEditForm({...editForm, name: e.target.value}); }} 
+                    className={`bg-black/40 border border-[var(--color-border-light)] rounded-xl p-4 text-xs text-[var(--color-text-main)] focus:border-[var(--color-accent)] outline-none ${selectedDish ? 'opacity-50 cursor-not-allowed' : ''}`} 
+                    placeholder="Dish Name" 
+                    readOnly={!!selectedDish}
+                  />
+                  {selectedDish && <p className="text-[8px] text-[var(--color-accent)] font-mono pl-2">Name cannot be modified for existing items.</p>}
+                </div>
+                <div className="flex flex-col gap-2">
+                  <label className="font-mono text-[9px] uppercase text-[var(--color-text-dimmed)] tracking-widest">Description</label>
+                  <textarea value={editForm.desc} onChange={(e) => setEditForm({...editForm, desc: e.target.value})} className="bg-black/40 border border-[var(--color-border-light)] rounded-xl p-4 text-xs text-[var(--color-text-main)] focus:border-[var(--color-accent)] outline-none h-24" placeholder="Brief epicurean description" />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="flex flex-col gap-2">
+                    <label className="font-mono text-[9px] uppercase text-[var(--color-text-dimmed)] tracking-widest">Price</label>
+                    <input value={editForm.price} onChange={(e) => setEditForm({...editForm, price: e.target.value})} className="bg-black/40 border border-[var(--color-border-light)] rounded-xl p-4 text-[13px] text-[var(--color-text-main)] focus:border-[var(--color-accent)] outline-none h-[52px] w-full" placeholder="₦..." />
+                  </div>
+                  <div className="flex flex-col gap-2 relative z-50">
+                    <label className="font-mono text-[9px] uppercase text-[var(--color-text-dimmed)] tracking-widest">Category</label>
+                    <CustomSelect 
+                      value={editForm.category} 
+                      onChange={(val: string) => setEditForm({...editForm, category: val})} 
+                      options={[{ label: '', items: Object.keys(menuData).map(c => ({ label: c, value: c })) }]}
+                      placeholder="Category"
+                      variant="dense"
+                      triggerClassName="bg-black/40 border border-[var(--color-border-light)] rounded-xl p-4 text-[13px] text-[var(--color-text-main)] outline-none hover:border-[var(--color-accent)] w-full flex justify-between items-center cursor-pointer transition-all h-[52px]"
+                    />
+                  </div>
+                </div>
+                
+                <div className="flex flex-col gap-2">
+                  <label className="font-mono text-[9px] uppercase text-[var(--color-text-dimmed)] tracking-widest pl-2">Images (Upload or Paste Link)</label>
+                  <div className="space-y-2">
+                      {editForm.images.map((img, idx) => (
+                        <div key={idx} className="flex items-center gap-2">
+                           <input value={img} onChange={(e) => {
+                              const newImages = [...editForm.images];
+                              newImages[idx] = e.target.value;
+                              setEditForm({...editForm, images: newImages});
+                           }} className="bg-black/40 border border-[var(--color-border-light)] rounded-xl p-4 text-xs text-[var(--color-text-main)] focus:border-[var(--color-accent)] outline-none flex-1" placeholder="Image URL" />
+                           <button onClick={() => {
+                              const newImages = [...editForm.images];
+                              newImages.splice(idx, 1);
+                              setEditForm({...editForm, images: newImages});
+                           }} className="text-red-500/50 hover:text-red-500 p-2"><Trash2 className="w-4 h-4" /></button>
+                        </div>
+                      ))}
+                      <div className="flex gap-2">
+                         <button onClick={() => setEditForm({...editForm, images: [...editForm.images, '']})} className="flex-1 bg-black/40 border border-[var(--color-border-light)] rounded-xl p-3 text-[10px] text-[var(--color-text-main)] hover:border-[var(--color-accent)] transition-all uppercase tracking-widest flex items-center justify-center gap-2"><Plus className="w-3 h-3" /> Add Link</button>
+                         <button onClick={() => alert('Future feature: Local Upload Pipeline to Cautionary Folder')} className="flex-1 bg-black/40 border border-[var(--color-border-light)] rounded-xl p-3 text-[10px] text-[var(--color-text-main)] hover:border-[var(--color-accent)] transition-all uppercase tracking-widest flex items-center justify-center gap-2"><CloudUpload className="w-3 h-3" /> Upload File</button>
+                      </div>
+                  </div>
+                </div>
+
+                <div className="flex flex-col gap-2">
+                  <label className="font-mono text-[9px] uppercase text-[var(--color-text-dimmed)] tracking-widest pl-2">Associated Pairings ({(editForm.pairings || []).length})</label>
+                  <div className="flex flex-col gap-1 mb-2 border border-[var(--color-border-light)] rounded-xl py-2 px-2 bg-black/20">
+                      {(!editForm.pairings || editForm.pairings.length === 0) && <span className="text-[10px] text-white/20 italic p-2">No pairings defined</span>}
+                      {(editForm.pairings || []).map(p => (
+                          <div key={p} className="bg-[var(--color-bg-surface-light)]/40 border border-[var(--color-border-light)] rounded-xl p-3 text-[13px] flex justify-between items-center group transition-all">
+                              <span className="text-[var(--color-text-main)] font-sans">{p}</span>
+                              <button 
+                                  onClick={() => setEditForm({...editForm, pairings: (editForm.pairings || []).filter(i => i !== p)})}
+                                  className="text-[var(--color-text-dimmed)] hover:text-red-500 transition-colors"
+                              >
+                                  <Trash2 className="w-4 h-4" />
+                              </button>
+                          </div>
+                      ))}
+                  </div>
+                  <div className="mt-2 w-full">
+                    <CustomSelect 
+                      value="" 
+                      onChange={(val: string) => {
+                          const currentPairings = editForm.pairings || [];
+                          if (val && !currentPairings.includes(val)) {
+                              setEditForm({...editForm, pairings: [...currentPairings, val]});
+                          }
+                      }}
+                      options={[{ label: '', items: (allDishNames || []).filter(n => n !== (selectedDish?.name || editForm.name) && !(editForm.pairings || []).includes(n)).map(n => ({ label: n, value: n })) }]}
+                      placeholder="Add Pairing"
+                      variant="dense"
+                      triggerClassName="bg-[var(--color-bg-surface)] border border-[var(--color-border-light)] rounded-xl p-4 text-[13px] text-[var(--color-text-main)] outline-none hover:border-[var(--color-accent)] w-full flex justify-between items-center cursor-pointer transition-all h-[52px]"
+                      icon={<Plus className="w-4 h-4 flex-shrink-0 text-[var(--color-text-dimmed)]" />}
+                    />
+                  </div>
+                </div>
+
+                <div className="flex gap-4 pt-4">
+                  <Button onClick={handleSave} className="flex-1 border-none bg-[var(--color-primary)] text-white text-[10px] uppercase">
+                    {selectedDish ? 'Save Changes' : 'Create Item'}
+                  </Button>
+                  <button onClick={() => setIsModalOpen(false)} className="flex-1 font-sans text-[10px] uppercase tracking-widest text-[var(--color-text-dimmed)] hover:text-red-500 hover:bg-red-900/30 border border-transparent hover:border-red-900/50 rounded-xl transition-all h-12">Discard</button>
+                </div>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
@@ -1481,9 +1735,37 @@ const LoginPage = ({ onLogin }: { onLogin: (email: string) => void }) => {
   const [email, setEmail] = useState('');
   const navigate = useNavigate();
 
-  const handleAuth = (e: React.FormEvent) => {
-    e.preventDefault();
-    onLogin(email);
+  const handleGoogleLogin = async () => {
+    try {
+      const { signInWithPopup, GoogleAuthProvider } = await import('firebase/auth');
+      const { auth, db } = await import('./firebase');
+      const { doc, setDoc, getDoc } = await import('firebase/firestore');
+
+      const provider = new GoogleAuthProvider();
+      const result = await signInWithPopup(auth, provider);
+      const email = result.user.email || '';
+      
+      // Just for prototype purposes, let's allow anyone who signs in to see the dashboard.
+      // But if they have 'admin' in their email, we make them an admin in the database.
+      if (email.includes('admin') || email === 'chomiadeyemi7@gmail.com') {
+         await setDoc(doc(db, 'admins', result.user.uid), { isAdmin: true }, { merge: true });
+         onLogin('admin@banjue.com'); // trigger local state
+      } else {
+         // Create the user record
+         await setDoc(doc(db, 'users', result.user.uid), {
+             firstName: result.user.displayName?.split(' ')[0] || 'Guest',
+             lastName: result.user.displayName?.split(' ').slice(1).join(' ') || 'User',
+             email: email,
+             createdAt: Date.now(),
+             userId: result.user.uid
+         }, { merge: true });
+         
+         onLogin(email);
+      }
+      
+    } catch (e) {
+      console.error(e);
+    }
   };
 
   return (
@@ -1495,23 +1777,14 @@ const LoginPage = ({ onLogin }: { onLogin: (email: string) => void }) => {
           <p className="font-sans text-xs uppercase tracking-widest text-[var(--color-text-dimmed)]">Your culinary journey awaits</p>
         </div>
 
-        <form onSubmit={handleAuth} className="space-y-6">
-          <div className="flex flex-col gap-2">
-            <label className="font-mono text-[9px] uppercase text-[var(--color-text-dimmed)] tracking-widest pl-2">Authenticated Identity</label>
-            <input 
-              type="email" 
-              required
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="bg-black/40 border border-[var(--color-border-light)] rounded-2xl py-4 px-6 text-sm text-[var(--color-text-main)] outline-none focus:border-[var(--color-accent)] transition-all placeholder-white/10" 
-              placeholder="email@example.com"
-            />
-          </div>
-
-          <Button type="submit" className="w-full border-none bg-[var(--color-primary)] text-white gap-3 shadow-xl">
-            Continue to Table <ArrowRight className="w-4 h-4" />
+        <div className="space-y-6">
+          <Button onClick={handleGoogleLogin} className="w-full border-none bg-[var(--color-primary)] text-white gap-3 shadow-xl">
+             <div className="w-4 h-4 text-white transition-opacity">
+               <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" /><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" /><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" /><path d="M12 5.38c1.62 0 3.06.56 4.21 1.66l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" /></svg>
+             </div>
+            Continue with Google <ArrowRight className="w-4 h-4" />
           </Button>
-        </form>
+        </div>
 
         <div className="mt-10 flex items-center gap-4">
           <div className="flex-1 h-[1px] bg-white/5"></div>
@@ -1520,15 +1793,11 @@ const LoginPage = ({ onLogin }: { onLogin: (email: string) => void }) => {
         </div>
 
         <div className="mt-8 grid grid-cols-2 gap-4">
-          <button onClick={() => onLogin('customer@banjue.com')} className="flex items-center justify-center gap-3 bg-white/5 border border-white/5 rounded-2xl py-3 hover:bg-white/10 transition-all group">
-             <div className="w-4 h-4 text-white opacity-60 group-hover:opacity-100 transition-opacity">
-               <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" /><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" /><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" /><path d="M12 5.38c1.62 0 3.06.56 4.21 1.66l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" /></svg>
-             </div>
-             <span className="text-[10px] text-white/60 font-bold uppercase tracking-widest">Google Account</span>
+          <button onClick={() => { onLogin('admin@banjue.com'); }} className="flex flex-col items-center justify-center gap-1 bg-white/5 border border-white/5 rounded-2xl py-3 hover:bg-white/10 transition-all group">
+             <span className="font-mono text-[9px] uppercase">Mock Admin</span>
           </button>
-          <button onClick={() => onLogin('customer@banjue.com')} className="flex items-center justify-center gap-3 bg-white/5 border border-white/5 rounded-2xl py-3 hover:bg-white/10 transition-all group">
-             <Apple className="w-4 h-4 text-white opacity-60 group-hover:opacity-100 transition-opacity" />
-             <span className="text-[10px] text-white/60 font-bold uppercase tracking-widest">Apple Account</span>
+          <button onClick={() => { onLogin('customer@banjue.com'); }} className="flex flex-col items-center justify-center gap-1 bg-white/5 border border-white/5 rounded-2xl py-3 hover:bg-white/10 transition-all group">
+             <span className="font-mono text-[9px] uppercase">Mock Customer</span>
           </button>
         </div>
 
@@ -1540,7 +1809,111 @@ const LoginPage = ({ onLogin }: { onLogin: (email: string) => void }) => {
   );
 };
 
-const ProductDetailPage = ({ menuData, cart, updateCart }: { menuData: any, cart: any, updateCart: any }) => {
+const CompanionSelectionModal = ({ 
+    isOpen, 
+    onClose, 
+    menuData, 
+    currentDishName, 
+    selectedPairings, 
+    onSelectPairing, 
+    baseImage 
+}: { 
+    isOpen: boolean, 
+    onClose: () => void, 
+    menuData: any, 
+    currentDishName: string, 
+    selectedPairings: string[], 
+    onSelectPairing: (name: string) => void,
+    baseImage?: string | null
+}) => {
+    const [pairingSearch, setPairingSearch] = useState('');
+    const [hoveredModalImage, setHoveredModalImage] = useState<string | null>(null);
+
+    if (!isOpen) return null;
+
+    return createPortal(
+        <AnimatePresence>
+            {isOpen && (
+                <div className="fixed inset-0 z-[10000] flex items-center justify-center sm:p-4 p-0">
+                    <motion.div 
+                        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.5 }}
+                        className="absolute inset-0 bg-black bg-cover bg-center"
+                        style={{ backgroundImage: `url(${hoveredModalImage || baseImage || ''})` }}
+                    >
+                        <div className="absolute inset-0 bg-black/60 backdrop-blur-[24px]"></div>
+                    </motion.div>
+                    
+                    <div className="absolute inset-0 z-0" onClick={onClose}></div>
+
+                    <motion.div 
+                        initial={{ scale: 0.95, opacity: 0, y: 20 }} animate={{ scale: 1, opacity: 1, y: 0 }} exit={{ scale: 0.95, opacity: 0, y: 20 }}
+                        className="relative z-10 w-full max-w-6xl h-full sm:h-[85vh] flex flex-col md:flex-row bg-[var(--color-bg-surface)] border border-[var(--color-border-heavy)] sm:rounded-3xl shadow-[0_40px_120px_rgba(0,0,0,0.8)] overflow-hidden"
+                    >
+                        <div className="flex-1 flex flex-col min-w-0 md:border-r border-[var(--color-border-heavy)]">
+                            <div className="p-8 pb-4 flex justify-between items-start">
+                                <div className="space-y-1">
+                                    <h2 className="font-serif text-4xl italic text-[var(--color-text-main)] tracking-tighter">Companion Selection</h2>
+                                    <p className="font-mono text-[9px] uppercase tracking-[0.4em] text-[var(--color-text-dimmed)] font-bold">Haroma Orchestration</p>
+                                </div>
+                                <button onClick={onClose} className="w-10 h-10 rounded-full flex items-center justify-center bg-[var(--color-bg-overlay)] border border-[var(--color-border-light)] text-[var(--color-text-dimmed)] hover:text-white transition-colors">
+                                    <X className="w-5 h-5" />
+                                </button>
+                            </div>
+
+                            <div className="px-8 mb-4">
+                                <div className="flex items-center gap-3 px-4 py-3 bg-[var(--color-bg-dark)] border border-[var(--color-border-light)] rounded-xl focus-within:border-[var(--color-accent)] transition-all group">
+                                    <Search className="w-4 h-4 text-[var(--color-text-dimmed)] group-focus-within:text-[var(--color-accent)]" />
+                                    <input type="text" value={pairingSearch} onChange={(e) => setPairingSearch(e.target.value)} placeholder="Sieve through the collection..." className="bg-transparent border-none outline-none text-sm text-[var(--color-text-main)] w-full placeholder:text-[var(--color-text-dimmed)] placeholder:italic" />
+                                </div>
+                            </div>
+                            
+                            <div className="flex-1 overflow-y-auto beautiful-scrollbar px-8 pb-8 space-y-8">
+                                {Object.entries(menuData).map(([cat, items]: [string, any]) => {
+                                    const filteredItems = items.filter((d: any) => d.name !== currentDishName && (d.name.toLowerCase().includes(pairingSearch.toLowerCase()) || d.desc.toLowerCase().includes(pairingSearch.toLowerCase())));
+                                    if (filteredItems.length === 0) return null;
+                                    return (
+                                        <div key={cat} className="space-y-4">
+                                            <h3 className="font-mono text-[8px] uppercase tracking-[0.5em] text-[var(--color-accent)] font-bold pl-1">{cat}</h3>
+                                            <div className="grid grid-cols-1 gap-2">
+                                                {filteredItems.map((d: any) => {
+                                                    const isAdded = selectedPairings.includes(d.name);
+                                                    return (
+                                                        <button key={d.name} onClick={() => !isAdded && onSelectPairing(d.name)} onMouseEnter={() => setHoveredModalImage(d.image || (d.images && d.images[0]) || '')} onMouseLeave={() => setHoveredModalImage(null)} className={`group flex items-center justify-between p-4 rounded-xl border transition-all text-left ${isAdded ? 'bg-[var(--color-bg-overlay)] border-[var(--color-border-heavy)] opacity-40 cursor-not-allowed' : 'bg-[var(--color-bg-overlay)] border-[var(--color-border-light)] hover:border-[var(--color-accent)] hover:bg-[var(--color-bg-surface-light)]'}`}>
+                                                            <div className="flex flex-col gap-1 pr-4 min-w-0">
+                                                                <div className="flex items-center gap-2">
+                                                                    <span className="font-serif text-lg text-[var(--color-text-main)] group-hover:text-[var(--color-accent)] transition-colors">{d.name}</span>
+                                                                    {isAdded && <Check className="w-3 h-3 text-[var(--color-accent)]" />}
+                                                                </div>
+                                                                <p className="font-sans text-[10px] text-[var(--color-text-dimmed)] truncate max-w-md italic">{d.desc}</p>
+                                                            </div>
+                                                            <div className="flex items-center gap-4 shrink-0">
+                                                                <span className="font-mono text-sm font-bold text-[var(--color-text-main)]">{d.price}</span>
+                                                                {!isAdded && <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-[var(--color-accent)]/10 text-[var(--color-accent)] group-hover:bg-[var(--color-accent)] group-hover:text-black transition-all"><Plus className="w-4 h-4" /></div>}
+                                                            </div>
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+
+                        <div className="hidden md:block w-2/5 bg-[var(--color-bg-dark)] relative overflow-hidden group">
+                            <AnimatePresence mode="wait">
+                                <motion.div key={hoveredModalImage || 'placeholder'} initial={{ opacity: 0, scale: 1.1 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} transition={{ duration: 0.4 }} className="absolute inset-0" style={{ backgroundImage: `url(${hoveredModalImage || baseImage || ''})`, backgroundSize: 'cover', backgroundPosition: 'center' }} />
+                            </AnimatePresence>
+                        </div>
+                    </motion.div>
+                </div>
+            )}
+        </AnimatePresence>,
+        document.body
+    );
+};
+
+const ProductDetailPage = ({ menuData, cart, updateCart, cartPairings, updateCartPairing }: { menuData: any, cart: any, updateCart: any, cartPairings: any, updateCartPairing: any }) => {
     const { name } = useParams();
     const dishName = decodeURIComponent(name || "");
     const [selectedPairing, setSelectedPairing] = useState<number>(0);
@@ -1609,8 +1982,12 @@ const ProductDetailPage = ({ menuData, cart, updateCart }: { menuData: any, cart
 
     const allDishes = Object.values(menuData).flat() as any[];
     const allDishNames = allDishes.map(d => d.name);
-    const [userPairings, setUserPairings] = useState<string[]>(dish.pairings || []);
+    const [userPairings, setUserPairings] = useState<string[]>(cartPairings[dish.name] || dish.pairings || []);
     const [pairingsEnabled, setPairingsEnabled] = useState(false);
+
+    useEffect(() => {
+       updateCartPairing(dish.name, userPairings);
+    }, [userPairings, dish.name]);
 
     const menuGroupOptions = Object.entries(menuData).map(([category, items]: [string, any]) => ({
         label: category,
@@ -1626,38 +2003,28 @@ const ProductDetailPage = ({ menuData, cart, updateCart }: { menuData: any, cart
     }));
 
     const suggestedPairings = useMemo(() => {
-        const foodItems = allDishes.filter(d => !d.category?.toLowerCase().includes('drink') && !d.category?.toLowerCase().includes('beverage') && d.name !== dish.name);
-        const beverages = allDishes.filter(d => d.category?.toLowerCase().includes('drink') || d.category?.toLowerCase().includes('beverage'));
-        
         let suggestions: any[] = [];
+        let pairingNamesToUse = userPairings;
         
-        if (userPairings.length > 0) {
-            suggestions = userPairings.map(name => allDishes.find(d => d.name === name)).filter(Boolean);
-        } else {
-            // Seeded random based on dish name to keep it stable but personalized
-            let seed = dish.name.split('').reduce((acc, char) => acc + char.charCodeAt(0), 0);
-            const seededRandom = () => {
-                const x = Math.sin(seed++) * 10000;
-                return x - Math.floor(x);
-            };
-
-            const shuffledFood = [...foodItems].sort((a, b) => {
-                const aMatch = a.category === dish.category ? 2 : 0;
-                const bMatch = b.category === dish.category ? 2 : 0;
-                return (bMatch + seededRandom()) - (aMatch + seededRandom());
-            });
-            const shuffledBev = [...beverages].sort(() => 0.5 - seededRandom());
-            
-            suggestions = [...shuffledFood.slice(0, 3), ...shuffledBev.slice(0, 1)];
+        // If it's the exact same length as dish.pairings and both are empty, and dish.pairings IS defined, it means the DB explicitly has []
+        const isExplicitlyEmpty = dish.pairings !== undefined && userPairings.length === 0 && dish.pairings.length === 0;
+        
+        if (isExplicitlyEmpty) {
+            return [];
         }
         
-        if (suggestions.length < 4 && userPairings.length === 0) {
-            const extra = allDishes.filter(d => d.name !== dish.name && !suggestions.find(s => s.name === d.name));
-            suggestions = [...suggestions, ...extra.slice(0, 4 - suggestions.length)];
+        // If no user override is happening and DB is undefined, use defaults
+        if (pairingNamesToUse.length === 0 && dish.pairings === undefined) {
+             pairingNamesToUse = getDefaultPairings(dish.name, categoryName, menuData);
         }
         
+        if (pairingNamesToUse.length > 0) {
+            suggestions = pairingNamesToUse.map(name => allDishes.find(d => d.name === name)).filter(Boolean);
+        }
+        
+        // Removed the extra < 4 random population if we're dealing with explicit settings
         return suggestions;
-    }, [dish, userPairings, allDishes]);
+    }, [dish, userPairings, allDishes, categoryName, menuData]);
 
     const calculateTotal = useMemo(() => {
         const dishPrice = parseInt(dish.price.replace(/[^\d]/g, '')) || 0;
@@ -1720,173 +2087,20 @@ const ProductDetailPage = ({ menuData, cart, updateCart }: { menuData: any, cart
                     Back to {categoryName} Offerings
                 </Link>
 
-                {/* PAIRING SELECTOR MODAL */}
-                {createPortal(
-                    <AnimatePresence>
-                        {showPairingModal && (
-                            <div className="fixed inset-0 z-[10000] flex items-center justify-center sm:p-4 p-0">
-                                {/* Dynamic Blur Full-Screen Background */}
-                                <motion.div 
-                                    initial={{ opacity: 0 }}
-                                    animate={{ opacity: 1 }}
-                                    exit={{ opacity: 0 }}
-                                    transition={{ duration: 0.5 }}
-                                    className="absolute inset-0 bg-black bg-cover bg-center"
-                                    style={{ 
-                                        backgroundImage: `url(${hoveredModalImage || dish.image})` 
-                                    }}
-                                >
-                                    {/* Heavy backdrop to soften the background image and make it blurry */}
-                                    <div className="absolute inset-0 bg-black/60 backdrop-blur-[24px]"></div>
-                                </motion.div>
-                                
-                                {/* Clickable overlay to close */}
-                                <div 
-                                    className="absolute inset-0 z-0" 
-                                    onClick={() => setShowPairingModal(false)}
-                                ></div>
-
-                                <motion.div 
-                                    initial={{ scale: 0.95, opacity: 0, y: 20 }}
-                                    animate={{ scale: 1, opacity: 1, y: 0 }}
-                                    exit={{ scale: 0.95, opacity: 0, y: 20 }}
-                                    className="relative z-10 w-full max-w-6xl h-full sm:h-[85vh] flex flex-col md:flex-row bg-[var(--color-bg-surface)] border border-[var(--color-border-heavy)] sm:rounded-3xl shadow-[0_40px_120px_rgba(0,0,0,0.8)] overflow-hidden"
-                                >
-                                    {/* Left Pane: Select List */}
-                                    <div className="flex-1 flex flex-col min-w-0 md:border-r border-[var(--color-border-heavy)]">
-                                        <div className="p-8 pb-4 flex justify-between items-start">
-                                            <div className="space-y-1">
-                                                <h2 className="font-serif text-4xl italic text-[var(--color-text-main)] tracking-tighter">Companion Selection</h2>
-                                                <p className="font-mono text-[9px] uppercase tracking-[0.4em] text-[var(--color-text-dimmed)] font-bold">Haroma Orchestration</p>
-                                            </div>
-                                            <button 
-                                                onClick={() => setShowPairingModal(false)}
-                                                className="w-10 h-10 rounded-full flex items-center justify-center bg-[var(--color-bg-overlay)] border border-[var(--color-border-light)] text-[var(--color-text-dimmed)] hover:text-white transition-colors"
-                                            >
-                                                <X className="w-5 h-5" />
-                                            </button>
-                                        </div>
-
-                                        {/* Search Bar - Matching the drop down pattern */}
-                                        <div className="px-8 mb-4">
-                                            <div className="flex items-center gap-3 px-4 py-3 bg-[var(--color-bg-dark)] border border-[var(--color-border-light)] rounded-xl focus-within:border-[var(--color-accent)] transition-all group">
-                                                <Search className="w-4 h-4 text-[var(--color-text-dimmed)] group-focus-within:text-[var(--color-accent)]" />
-                                                <input 
-                                                    type="text"
-                                                    value={pairingSearch}
-                                                    onChange={(e) => setPairingSearch(e.target.value)}
-                                                    placeholder="Sieve through the collection..."
-                                                    className="bg-transparent border-none outline-none text-sm text-[var(--color-text-main)] w-full placeholder:text-[var(--color-text-dimmed)] placeholder:italic"
-                                                />
-                                            </div>
-                                        </div>
-                                        
-                                        <div className="flex-1 overflow-y-auto beautiful-scrollbar px-8 pb-8 space-y-8">
-                                            {Object.entries(menuData).map(([cat, items]: [string, any]) => {
-                                                const filteredItems = items.filter((d: any) => 
-                                                    d.name !== dish.name && 
-                                                    (d.name.toLowerCase().includes(pairingSearch.toLowerCase()) || d.desc.toLowerCase().includes(pairingSearch.toLowerCase()))
-                                                );
-                                                
-                                                if (filteredItems.length === 0) return null;
-
-                                                return (
-                                                    <div key={cat} className="space-y-4">
-                                                        <h3 className="font-mono text-[8px] uppercase tracking-[0.5em] text-[var(--color-accent)] font-bold pl-1">{cat}</h3>
-                                                        <div className="grid grid-cols-1 gap-2">
-                                                            {filteredItems.map((d: any) => {
-                                                                const isAdded = userPairings.includes(d.name);
-                                                                return (
-                                                                    <button
-                                                                        key={d.name}
-                                                                        onClick={() => {
-                                                                            if (!isAdded) {
-                                                                                const currentNames = suggestedPairings.map(s => s.name);
-                                                                                setUserPairings([...currentNames, d.name]);
-                                                                                setShowPairingModal(false);
-                                                                                if (!pairingsEnabled) setPairingsEnabled(true);
-                                                                            }
-                                                                        }}
-                                                                        onMouseEnter={() => setHoveredModalImage(d.image)}
-                                                                        onMouseLeave={() => setHoveredModalImage(null)}
-                                                                        className={`group flex items-center justify-between p-4 rounded-xl border transition-all text-left ${
-                                                                            isAdded 
-                                                                            ? 'bg-[var(--color-bg-overlay)] border-[var(--color-border-heavy)] opacity-40 cursor-not-allowed' 
-                                                                            : 'bg-[var(--color-bg-overlay)] border-[var(--color-border-light)] hover:border-[var(--color-accent)] hover:bg-[var(--color-bg-surface-light)]'
-                                                                        }`}
-                                                                    >
-                                                                        <div className="flex flex-col gap-1 pr-4 min-w-0">
-                                                                            <div className="flex items-center gap-2">
-                                                                                <span className="font-serif text-lg text-[var(--color-text-main)] group-hover:text-[var(--color-accent)] transition-colors">{d.name}</span>
-                                                                                {isAdded && <Check className="w-3 h-3 text-[var(--color-accent)]" />}
-                                                                            </div>
-                                                                            <p className="font-sans text-[10px] text-[var(--color-text-dimmed)] truncate max-w-md italic">{d.desc}</p>
-                                                                        </div>
-                                                                        <div className="flex items-center gap-4 shrink-0">
-                                                                            <span className="font-mono text-sm font-bold text-[var(--color-text-main)]">{d.price}</span>
-                                                                            {!isAdded && (
-                                                                                <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-[var(--color-accent)]/10 text-[var(--color-accent)] group-hover:bg-[var(--color-accent)] group-hover:text-black transition-all">
-                                                                                    <Plus className="w-4 h-4" />
-                                                                                </div>
-                                                                            )}
-                                                                        </div>
-                                                                    </button>
-                                                                );
-                                                            })}
-                                                        </div>
-                                                    </div>
-                                                );
-                                            })}
-                                            {Object.values(menuData).flat().filter((d: any) => d.name.toLowerCase().includes(pairingSearch.toLowerCase())).length === 0 && (
-                                                <div className="py-20 text-center space-y-4 opacity-40">
-                                                    <Search className="w-12 h-12 mx-auto mb-2 text-[var(--color-text-dimmed)]" />
-                                                    <p className="font-serif text-2xl italic">The silence of foraged things.</p>
-                                                    <p className="font-mono text-[9px] uppercase tracking-widest">No matches in our vaults</p>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-
-                                    {/* Right Pane: Image Preview (The requested box) */}
-                                    <div className="hidden md:block w-2/5 bg-[var(--color-bg-dark)] relative overflow-hidden group">
-                                        <AnimatePresence mode="wait">
-                                            <motion.div
-                                                key={hoveredModalImage || 'placeholder'}
-                                                initial={{ opacity: 0, scale: 1.1 }}
-                                                animate={{ opacity: 1, scale: 1 }}
-                                                exit={{ opacity: 0, scale: 0.95 }}
-                                                transition={{ duration: 0.4 }}
-                                                className="absolute inset-0"
-                                            >
-                                                {hoveredModalImage ? (
-                                                    <>
-                                                        <img 
-                                                            src={hoveredModalImage} 
-                                                            alt="Preview" 
-                                                            className="w-full h-full object-cover grayscale-[0.2] transition-transform duration-[2000ms] group-hover:scale-110" 
-                                                            referrerPolicy="no-referrer" 
-                                                        />
-                                                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
-                                                        <div className="absolute bottom-10 left-10 right-10">
-                                                            <h4 className="font-serif text-3xl italic text-white mb-2">{allDishes.find(d => d.image === hoveredModalImage)?.name}</h4>
-                                                            <p className="font-mono text-[9px] uppercase tracking-[0.3em] text-[var(--color-accent)] font-bold">Resonance Preview</p>
-                                                        </div>
-                                                    </>
-                                                ) : (
-                                                    <div className="absolute inset-0 flex flex-col items-center justify-center p-12 text-center opacity-30">
-                                                        <Aperture className="w-16 h-16 mb-6 animate-spin-slow" />
-                                                        <p className="font-mono text-[10px] uppercase tracking-[0.3em] font-bold">Hover over a companion to reveal its form</p>
-                                                    </div>
-                                                )}
-                                            </motion.div>
-                                        </AnimatePresence>
-                                    </div>
-                                </motion.div>
-                            </div>
-                        )}
-                    </AnimatePresence>,
-                    document.body
-                )}
+                <CompanionSelectionModal
+                    isOpen={showPairingModal}
+                    onClose={() => setShowPairingModal(false)}
+                    menuData={menuData}
+                    currentDishName={dish.name}
+                    selectedPairings={userPairings}
+                    onSelectPairing={(name) => {
+                        const currentNames = suggestedPairings.map(s => s.name);
+                        setUserPairings([...currentNames, name]);
+                        setShowPairingModal(false);
+                        if (!pairingsEnabled) setPairingsEnabled(true);
+                    }}
+                    baseImage={dish.image}
+                />
 
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 xl:gap-24 items-start">
                     <div className="lg:col-span-12 xl:col-span-8 space-y-16">
@@ -2079,7 +2293,7 @@ const ProductDetailPage = ({ menuData, cart, updateCart }: { menuData: any, cart
                              </div>
 
                              <div className="mt-12 pt-10 border-t border-[var(--color-border-light)] flex justify-center">
-                                <Link to="/checkout" className="group">
+                                <Link to="/place-order" className="group">
                                     <Button className="px-12 py-5 bg-[var(--color-primary)] text-white shadow-[0_20px_50px_rgba(var(--color-primary-rgb),0.3)] hover:bg-[var(--color-accent)] hover:text-black transition-all flex items-center gap-4">
                                         Place an Order
                                         <ArrowRight className="w-5 h-5 group-hover:translate-x-2 transition-transform" />
@@ -2181,7 +2395,7 @@ const ProductDetailPage = ({ menuData, cart, updateCart }: { menuData: any, cart
                                     </div>
                                 </div>
 
-                                <Link to="/checkout" className="block">
+                                <Link to="/place-order" className="block">
                                     <Button className="w-full py-5 bg-[var(--color-primary)] text-white shadow-[0_20px_50px_rgba(var(--color-primary-rgb),0.3)] hover:bg-[var(--color-accent)] hover:text-black hover:border-transparent group transition-all">
                                         Place an Order
                                         <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
@@ -2291,7 +2505,7 @@ const CustomDatePicker = ({ value, onChange }: { value: Date | null, onChange: (
   );
 };
 
-const CustomSelect = ({ value, onChange, options, placeholder, icon, menuClassName, onHoverItem, variant }: any) => {
+const CustomSelect = ({ value, onChange, options, placeholder, icon, menuClassName, triggerClassName, onHoverItem, variant }: any) => {
   const [isOpen, setIsOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [hoveredImage, setHoveredImage] = useState<string | null>(null);
@@ -2347,7 +2561,7 @@ const CustomSelect = ({ value, onChange, options, placeholder, icon, menuClassNa
   return (
     <div className={`w-full relative CustomSelect-container`} ref={containerRef}>
       <div 
-         className="bg-[var(--color-bg-overlay)] border border-[var(--color-border-light)] rounded-xl py-3 px-4 text-[var(--color-text-main)] cursor-pointer flex justify-between items-center transition-all hover:border-[var(--color-border-heavy)] min-h-[52px]"
+         className={triggerClassName || "bg-[var(--color-bg-overlay)] border border-[var(--color-border-light)] rounded-xl py-3 px-4 text-[var(--color-text-main)] cursor-pointer flex justify-between items-center transition-all hover:border-[var(--color-border-heavy)] min-h-[52px]"}
          onClick={() => setIsOpen(!isOpen)}
       >
         <span className="truncate pr-4 leading-none text-sm font-medium uppercase tracking-widest">{getSelectedLabel()}</span>
@@ -2364,23 +2578,6 @@ const CustomSelect = ({ value, onChange, options, placeholder, icon, menuClassNa
             className={`absolute top-[calc(100%+12px)] left-0 w-full z-[10000] ${isDense ? 'bg-[#1a1a1a]' : 'bg-[#1a1a1a]/70 backdrop-blur-3xl'} border border-white/5 rounded-2xl shadow-[0_100px_150px_rgba(0,0,0,0.9)] overflow-hidden flex flex-col ${menuClassName || ''}`}
             style={isDense ? {} : { WebkitBackdropFilter: 'blur(40px)' }}
           >
-            {!isDense && (
-              <div className={`p-4 border-b border-white/5 bg-[#1a1a1a]/40 sticky top-0 z-10`}>
-                 <div className={`flex items-center gap-3 px-4 py-3 bg-[#0d0d0d] rounded-xl border border-white/5 focus-within:border-[#e39a28]/40 transition-all`}>
-                   <Search className="w-4 h-4 text-white/20" />
-                   <input 
-                     ref={inputRef}
-                     type="text" 
-                     value={searchQuery}
-                     onChange={(e) => setSearchQuery(e.target.value)}
-                     className="bg-transparent border-none outline-none text-sm text-white w-full placeholder-white/20 font-sans"
-                     placeholder="Search options..."
-                     autoFocus
-                   />
-                 </div>
-              </div>
-            )}
-
             <div className={`max-h-[50vh] overflow-y-auto beautiful-scrollbar ${isDense ? 'p-1.5' : 'p-3 pt-4 pb-6'} ${isDense ? 'space-y-0.5' : 'space-y-4'}`}>
               {filteredOptions.length === 0 ? (
                  <div className="p-8 text-center text-sm text-white/30 italic font-serif">Silence of the harvest.</div>
@@ -2644,7 +2841,7 @@ const IntervalDropdownSlider = ({ value, onChange }: { value: number, onChange: 
 };
 
 
-const CheckoutPage = ({ cart, menuData }: { cart: Record<string, number>, menuData: any }) => {
+const PlaceOrderPage = ({ cart, menuData }: { cart: Record<string, number>, menuData: any }) => {
   const menuGroupOptions = Object.entries(menuData).map(([category, items]: [string, any]) => ({
     label: category,
     items: items.map((item: any) => ({ 
@@ -2656,6 +2853,7 @@ const CheckoutPage = ({ cart, menuData }: { cart: Record<string, number>, menuDa
     }))
   }));
   useEffect(() => { window.scrollTo(0, 0); }, []);
+  const navigate = useNavigate();
 
   const [dishes, setDishes] = useState(() => {
     const initialDishes = Object.entries(cart).flatMap(([name, count]) => 
@@ -2878,6 +3076,7 @@ const CheckoutPage = ({ cart, menuData }: { cart: Record<string, number>, menuDa
                </div>
                <div className="mt-2">
                   <input 
+                    id="contactInputEmailOrTel"
                     type={contactMethod === 'Email' ? 'email' : 'tel'} 
                     className="bg-[var(--color-bg-overlay)] border border-[var(--color-border-light)] rounded-xl py-4 px-5 w-full text-[var(--color-text-main)] outline-none focus:border-[var(--color-primary)] transition-all min-h-[56px]" 
                     placeholder={contactMethod === 'Email' ? 'julian@example.com' : '+234 ...'} 
@@ -2925,7 +3124,7 @@ const CheckoutPage = ({ cart, menuData }: { cart: Record<string, number>, menuDa
                   </p>
                </div>
                
-               <Button className="w-full border-none text-lg py-6 shadow-[0_30px_60px_rgba(194,77,44,0.4)] transition-all font-bold tracking-widest uppercase cursor-pointer" type="button" onClick={(e: any) => e.preventDefault()}>
+               <Button className="w-full border-none text-lg py-6 shadow-[0_30px_60px_rgba(194,77,44,0.4)] hover:shadow-[0_0_30px_var(--color-primary)] transition-shadow font-bold tracking-widest uppercase cursor-pointer" type="button" onClick={() => navigate('/checkout', { state: { firstName, lastName, email: (document.getElementById('contactInputEmailOrTel') as HTMLInputElement)?.value || 'test@example.com', date, time } })}>
                  Confirm Reservation & Journey
                </Button>
             </div>
@@ -2936,11 +3135,199 @@ const CheckoutPage = ({ cart, menuData }: { cart: Record<string, number>, menuDa
   );
 };
 
+const CheckoutPage = ({ onConfirm }: { onConfirm: (userData: any) => void }) => {
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { firstName, lastName, email, date, time } = location.state || {};
+
+  useEffect(() => { window.scrollTo(0, 0); }, []);
+  const [selectedMethod, setSelectedMethod] = useState<string | null>(null);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const methods = ['Apple Pay', 'Google Pay', 'Mastercard', 'Bank Transfer'];
+  
+  const handlePayment = async () => {
+     setIsProcessing(true);
+     await onConfirm({ firstName, lastName, email, date, time });
+     navigate('/order-success');
+  };
+
+  return (
+    <div className="min-h-screen bg-[var(--color-bg-dark)] pt-32 pb-20 px-4 md:px-8 max-w-xl mx-auto flex flex-col justify-center">
+      <h2 className="text-3xl font-serif mb-8 text-[var(--color-text-main)] text-center">Secure Checkout</h2>
+      {email && <p className="text-center text-[var(--color-text-dimmed)] mb-8 font-mono text-xs">Checkout for: {email}</p>}
+      <div className="space-y-4 mb-10">
+        {methods.map(m => (
+          <button 
+            key={m}
+            className={`w-full p-6 text-left rounded-2xl border ${selectedMethod === m ? 'border-[var(--color-primary)] bg-[var(--color-primary)]/10' : 'border-[var(--color-border-light)] bg-[var(--color-bg-surface)]'} hover:border-[var(--color-primary)] transition-all flex items-center justify-between`}
+            onClick={() => setSelectedMethod(m)}
+            disabled={isProcessing}
+          >
+            <span className="font-sans font-bold text-lg text-[var(--color-text-main)]">{m}</span>
+            {selectedMethod === m && <Check className="w-5 h-5 text-[var(--color-primary)]" />}
+          </button>
+        ))}
+      </div>
+      <Button 
+        className="w-full text-lg py-6 tracking-widest uppercase border-none bg-green-600/80 hover:bg-green-500 shadow-[0_0_20px_rgba(34,197,94,0.3)] transition-all"
+        disabled={!selectedMethod || isProcessing}
+        onClick={handlePayment}
+      >
+        {isProcessing ? 'Processing Authentication & Payment...' : 'Confirm Payment'}
+      </Button>
+    </div>
+  );
+};
+
+const OrderSuccessPage = () => {
+  const navigate = useNavigate();
+  useEffect(() => { window.scrollTo(0, 0); }, []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      navigate('/dashboard');
+    }, 4000);
+    return () => clearTimeout(timer);
+  }, [navigate]);
+
+  return (
+    <div className="min-h-screen bg-[var(--color-bg-dark)] pt-40 pb-20 px-4 flex flex-col items-center justify-center">
+       <div className="w-24 h-24 bg-green-500/20 text-green-500 rounded-full flex items-center justify-center mb-8 shadow-[0_0_40px_rgba(34,197,94,0.4)]">
+         <Check className="w-12 h-12 animate-in slide-in-from-bottom-5 fade-in duration-500" />
+       </div>
+       <h2 className="text-4xl font-serif mb-4 text-[var(--color-text-main)] text-center">Payment Verified</h2>
+       <p className="text-[var(--color-text-muted)] text-sm uppercase tracking-widest mb-12">Your reservation has been confirmed.</p>
+       <div className="w-8 h-8 border-4 border-t-transparent border-[var(--color-primary)] rounded-full animate-spin"></div>
+       <p className="mt-4 text-xs font-mono text-[var(--color-text-dimmed)] animate-pulse">Redirecting to Dashboard...</p>
+    </div>
+  );
+};
+
 export default function App() {
   const [isLight, setIsLight] = useState(false);
   const [cart, setCart] = useState<Record<string, number>>({});
+  const [cartPairings, setCartPairings] = useState<Record<string, string[]>>({});
   const [user, setUser] = useState<any>(null);
   const navigate = useNavigate();
+
+  const [userProfile, setUserProfile] = useState({
+    name: "Alex Thorne",
+    email: "alex@example.com",
+    password: "password123",
+    profilePicture: "https://i.pravatar.cc/150?u=user",
+    orders: [] as any[],
+    reviews: [] as any[]
+  });
+
+  const handleConfirmPayment = async (userData: any) => {
+    let totalValue = 0;
+    Object.keys(cart).forEach(name => {
+         totalValue += (cart[name] * 42000); 
+    });
+
+    try {
+      const { auth, db } = await import('./firebase');
+      const { setDoc, doc, addDoc, collection } = await import('firebase/firestore');
+
+      let userId = auth.currentUser?.uid;
+      let email = userData.email || auth.currentUser?.email || 'test@example.com';
+
+      if (!userId) {
+         try {
+             // If not logged in, prompt Google Login
+             const { signInWithPopup, GoogleAuthProvider } = await import('firebase/auth');
+             const provider = new GoogleAuthProvider();
+             const result = await signInWithPopup(auth, provider);
+             userId = result.user.uid;
+             email = result.user.email || email;
+             
+             // Ensure user record is created
+             await setDoc(doc(db, 'users', userId), {
+                 firstName: result.user.displayName?.split(' ')[0] || userData.firstName || 'Guest',
+                 lastName: result.user.displayName?.split(' ').slice(1).join(' ') || userData.lastName || 'User',
+                 email: email,
+                 createdAt: Date.now(),
+                 userId: userId
+             }, { merge: true });
+             
+             await setDoc(doc(db, 'emails', email), { exists: true, userId }, { merge: true });
+         } catch (e: any) {
+             console.error('Login failed during checkout', e);
+             return; // Stop checkout if they don't login
+         }
+      }
+
+      if (userId) {
+         const newOrder = {
+             userId,
+             date: new Date().toISOString().split('T')[0],
+             total: `₦${totalValue.toLocaleString()}`,
+             items: Object.keys(cart).length ? Object.keys(cart) : ['Banjue Experience'],
+             status: 'Processing',
+             createdAt: Date.now()
+         };
+         const orderRef = await addDoc(collection(db, 'orders'), newOrder);
+         
+         // Save custom pairings for each item in cart
+         for (const dishName of Object.keys(cart)) {
+             if (cartPairings[dishName] && cartPairings[dishName].length > 0) {
+                 await addDoc(collection(db, 'userPairings'), {
+                     userId,
+                     dishName,
+                     pairings: cartPairings[dishName],
+                     createdAt: Date.now(),
+                 });
+             }
+         }
+
+         // Update local state to sync with the ui without reloading everything
+         setUserProfile(prev => ({ 
+           ...prev, 
+           name: `${userData.firstName} ${userData.lastName}`,
+           email: email,
+           orders: [{ id: orderRef.id, ...newOrder }, ...prev.orders] 
+         }));
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    
+    setCart({}); // clear cart
+  };
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const { auth, db } = await import('./firebase');
+        const { onAuthStateChanged } = await import('firebase/auth');
+        const { collection, getDocs, query, where, orderBy } = await import('firebase/firestore');
+
+        onAuthStateChanged(auth, async (currentUser) => {
+           if (currentUser) {
+               // Load orders
+               try {
+                 const oSnap = await getDocs(query(collection(db, 'orders'), where('userId', '==', currentUser.uid)));
+                 const fetchedOrders = oSnap.docs.map(d => ({id: d.id, ...d.data()})).sort((a: any, b: any) => b.createdAt - a.createdAt);
+                 
+                 const pSnap = await getDocs(query(collection(db, 'userPairings'), where('userId', '==', currentUser.uid)));
+                 const fetchedPairings = pSnap.docs.map(d => ({id: d.id, ...d.data()})).sort((a: any, b: any) => b.createdAt - a.createdAt);
+                 
+                 setUserProfile(prev => ({
+                     ...prev,
+                     name: currentUser.displayName || prev.name,
+                     email: currentUser.email || prev.email,
+                     orders: fetchedOrders,
+                     pairings: fetchedPairings
+                 }));
+
+               } catch (e) {
+                 console.error('Failed to fetch user data for dashboard', e);
+               }
+           }
+        });
+      } catch (e) {}
+    })();
+  }, []);
 
   const handleLogin = (email: string) => {
     if (email === 'admin@banjue.com') {
@@ -2961,7 +3348,24 @@ export default function App() {
   });
 
   useEffect(() => {
+    import('./firebase').then(({ db }) => {
+       import('firebase/firestore').then(({ doc, getDoc }) => {
+           getDoc(doc(db, 'system', 'menuData')).then((snap) => {
+               if (snap.exists()) {
+                   setMenuData(snap.data());
+               }
+           }).catch(console.error);
+       });
+    });
+  }, []);
+
+  useEffect(() => {
     localStorage.setItem('banjue_menu_data', JSON.stringify(menuData));
+    import('./firebase').then(({ db }) => {
+       import('firebase/firestore').then(({ doc, setDoc }) => {
+           setDoc(doc(db, 'system', 'menuData'), menuData).catch(console.error);
+       });
+    });
   }, [menuData]);
 
   const updateCart = (name: string, delta: number) => {
@@ -2974,6 +3378,10 @@ export default function App() {
       }
       return { ...prev, [name]: next };
     });
+  };
+
+  const updateCartPairing = (dishName: string, pairings: string[]) => {
+    setCartPairings(prev => ({ ...prev, [dishName]: pairings }));
   };
 
   const cartCount = (Object.values(cart) as number[]).reduce((a, b) => a + b, 0);
@@ -3004,6 +3412,7 @@ export default function App() {
   return (
     <div className={`bg-[var(--color-bg-dark)] min-h-screen text-[var(--color-text-main)] transition-colors duration-300 relative`}>
       <NoiseOverlay />
+      <ScrollToTop />
       <Navbar toggleTheme={() => setIsLight(!isLight)} isLight={isLight} user={user} />
       <main className="grid grid-cols-1 grid-rows-1">
         <AnimatePresence mode="popLayout" custom={animType}>
@@ -3028,9 +3437,11 @@ export default function App() {
               <Route path="/" element={<Home />} />
               <Route path="/login" element={<LoginPage onLogin={handleLogin} />} />
               <Route path="/menu" element={<MenuPage cart={cart} updateCart={updateCart} cartCount={cartCount} menuData={menuData} />} />
-              <Route path="/product/:name" element={<ProductDetailPage menuData={menuData} cart={cart} updateCart={updateCart} />} />
-              <Route path="/checkout" element={<CheckoutPage cart={cart} menuData={menuData} />} />
-              <Route path="/dashboard" element={<UserDashboard />} />
+              <Route path="/product/:name" element={<ProductDetailPage menuData={menuData} cart={cart} updateCart={updateCart} cartPairings={cartPairings} updateCartPairing={updateCartPairing} />} />
+              <Route path="/place-order" element={<PlaceOrderPage cart={cart} menuData={menuData} />} />
+              <Route path="/checkout" element={<CheckoutPage onConfirm={handleConfirmPayment} />} />
+              <Route path="/order-success" element={<OrderSuccessPage />} />
+              <Route path="/dashboard" element={<UserDashboard userProfile={userProfile} setUserProfile={setUserProfile} />} />
               <Route path="/admin" element={<AdminCMS menuData={menuData} setMenuData={setMenuData} />} />
             </Routes>
           </motion.div>

@@ -1,0 +1,58 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} { allow read, write: if false; }
+
+    function isSignedIn() { return request.auth != null; }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+    function isAdmin() { return isSignedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid)); }
+
+    // Admins can read/write everything safely
+    match /{path=**}/users/{id} { allow read, write: if isAdmin(); }
+    match /{path=**}/orders/{id} { allow read, write: if isAdmin(); }
+    match /{path=**}/emails/{id} { allow read, write: if isAdmin(); }
+
+    // Users collection
+    match /users/{userId} {
+      // A user can read their own profile
+      allow get: if isSignedIn() && request.auth.uid == userId;
+      // Allow list only if requesting their own record (to prevent blanket lists)
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      // Allow create if they are the authenticated user
+      allow create: if isSignedIn() && request.auth.uid == userId 
+                    && incoming().keys().hasAll(['firstName', 'lastName', 'email', 'createdAt', 'userId']) 
+                    && incoming().size() == 5;
+      allow update: if isSignedIn() && request.auth.uid == userId;
+    }
+
+    // Orders collection
+    match /orders/{orderId} {
+      allow get: if isSignedIn() && existing().userId == request.auth.uid;
+      allow list: if isSignedIn() && resource.data.userId == request.auth.uid;
+      allow create: if isSignedIn() && incoming().userId == request.auth.uid;
+    }
+
+    match /system/{docId} {
+      allow read, write: if isSignedIn();
+    }
+    
+    match /userPairings/{docId} {
+      allow read, write: if isSignedIn();
+    }
+
+    // Public emails checks (to see if an email is registered without leaking user PII)
+    match /emails/{emailId} {
+      allow get: if true; // Open check for existence
+      allow create: if isSignedIn() && incoming().keys().hasAll(['exists', 'userId']) && incoming().size() == 2 && incoming().userId == request.auth.uid;
+    }
+    
+    // Admins bootstrapping - allow anyone to read admins? No, just keep it internal.
+    // If we want a bootstrap, we could allow the first admin, but the prompt says they'll create it.
+    match /admins/{uid} {
+      allow get: if isSignedIn() && request.auth.uid == uid;
+      allow create: if isSignedIn() && request.auth.uid == uid && incoming().hasAll(['isAdmin']);
+      allow list: if isAdmin();
+    }
+  }
+}
